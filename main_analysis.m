@@ -1,6 +1,9 @@
 clear;clc;close all;
 
+% Select animal
+animal = 'I076';
 
+% HPC/Unix compatability
 if isunix
     cd('/common/fleischerp/');
     origin_rootpath = '/common/fleischerp/raw_data/';
@@ -8,19 +11,25 @@ if isunix
     code_rootpath = '';
 else
     restoredefaultpath()
-    origin_rootpath = 'Z:/M1_Cb_Reach/';
+    if strcmp(animal, 'I061') || strcmp(animal, 'I064') || strcmp(animal, 'I076') || strcmp(animal, 'I096')
+        origin_rootpath = 'X:/LabDataBackup/M1_Cb_Reach/';
+    else
+        origin_rootpath = 'Z:/M1_Cb_Reach/';
+    end
     rootpath = 'D:/Pierson_Data_Analysis/';
     code_rootpath = 'C:/Users/FleischerP/Documents/MATLAB/';
 end
 
-animal = 'I086';
+% Reinitialize parameters?
 regen_params = true;
 
+% Create Results file for multi_animal_analysis
 if ~exist([rootpath,animal,'/Shared_Data.mat'],'file')
     shared_data = struct();
     save([rootpath,animal,'/Shared_Data.mat'], 'shared_data');
 end
 
+% Create parameter file and fill in initial parameters or load existing file
 if exist([rootpath,animal,'/Parameters.mat'],'file') && ~regen_params
     load([rootpath,animal,'/Parameters.mat'])
 else
@@ -30,6 +39,7 @@ else
         param = struct();
     end
 
+    %Individual animals' parameter values
     if strcmp(animal, 'I060')
         %I060 Settings
         param.training_block_names = {'TDT_data/I050-200316-135106' 'TDT_data/I050-200316-162539';
@@ -57,17 +67,17 @@ else
 
     elseif strcmp(animal, 'I061')
         %I061 Settings
-        param.training_block_names = {['TDT_data/TDT_data/I061-200511-135832';'TDT_data/TDT_data/I061-200511-142659'] ['TDT_data/TDT_data/I061-200511-162529'];
-                                      ['TDT_data/TDT_data/I061-200512-122518'] ['TDT_data/TDT_data/I061-200512-151526'];
-                                      ['TDT_data/TDT_data/I061-200513-111020'] ['TDT_data/TDT_data/I061-200513-135834'];
-                                      ['TDT_data/TDT_data/I061-200514-120137'] ['TDT_data/TDT_data/I061-200514-145444'];
-                                      ['TDT_data/TDT_data/I061-200515-113618'] ['TDT_data/TDT_data/I061-200515-142605']};
+        param.training_block_names = {['I061-200511-135832';'I061-200511-142659'] ['I061-200511-162529'];
+                                      ['I061-200512-122518'] ['I061-200512-151526'];
+                                      ['I061-200513-111020'] ['I061-200513-135834'];
+                                      ['I061-200514-120137'] ['I061-200514-145444'];
+                                      ['I061-200515-113618'] ['I061-200515-142605']};
                     
-           param.sleep_block_names = {['TDT_data/TDT_data/I061-200511-105824';'TDT_data/TDT_data/I061-200511-123320'] ['TDT_data/TDT_data/I061-200511-150921'];
-                                      ['TDT_data/TDT_data/I061-200512-102347'] ['TDT_data/TDT_data/I061-200512-131257'];
-                                      ['TDT_data/TDT_data/I061-200513-090705'] ['TDT_data/TDT_data/I061-200513-115747'];
-                                      ['TDT_data/TDT_data/I061-200514-094708'] ['TDT_data/TDT_data/I061-200514-125245'];
-                                      ['TDT_data/TDT_data/I061-200515-093406'] ['TDT_data/TDT_data/I061-200515-122415']};
+           param.sleep_block_names = {['I061-200511-105824';'I061-200511-123320'] ['I061-200511-150921'];
+                                      ['I061-200512-102347'] ['I061-200512-131257'];
+                                      ['I061-200513-090705'] ['I061-200513-115747'];
+                                      ['I061-200514-094708'] ['I061-200514-125245'];
+                                      ['I061-200515-093406'] ['I061-200515-122415']};
         
         param.durFiles = ['Durations_200511';'Durations_200512';'Durations_200513';'Durations_200514';'Durations_200515'];
         param.WAV_video_offset = 0.25;
@@ -79,6 +89,7 @@ else
         param.Cb_neurons = 12;
         param.M1_spike_wave_Fs = 24414;
         param.Cb_spike_wave_Fs = 24414;
+        param.Spike_path = 'TDT_Data';
         
     elseif strcmp(animal, 'I064')
         param.training_block_names = {['I064-200713-122227'] ['I064-200713-150141'];
@@ -245,34 +256,6 @@ else
         param.M1_spike_wave_Fs = 24414;
         param.Cb_spike_wave_Fs = 24414;
         
-    elseif strcmp(animal, 'I096')
-        param.training_block_names = {['I096-211025-122116'] ['I096-211025-153916'];
-                                      ['I096-211026-120626'] ['I096-211026-153106'];
-                                      ['I096-211027-120654'] ['I096-211027-151750'];
-                                      ['I096-211028-115354'] ['I096-211028-153632'];
-                                      ['I096-211029-112213'] ['I096-211029-142122']};
-                    
-           param.sleep_block_names = {['I096-211025-102012'] ['I096-211025-133733'];
-                                      ['I096-211026-100034'] ['I096-211026-132815'];
-                                      ['I096-211027-100439'] ['I096-211027-131521'];
-                                      ['I096-211028-095201'] ['I096-211028-132627'];
-                                      ['I096-211029-095822'] ['I096-211029-121913']};
-        
-        param.durFiles = ['Durations_211025';'Durations_211026';'Durations_211027';'Durations_211028';'Durations_211029'];
-        param.WAV_video_offset = 0.25;
-        param.LFP_path = 'Wave_Channels';
-        param.Wave_path = 'Wave_Channels';
-        param.Spike_path = 'RS4_Data';
-        param.Camera_framerate = 75; %In hz
-        param.dom_hand = 'left';
-        param.M1_shant_site_num = 1;
-        param.Cb_shant_site_num = 16;
-        param.M1_neurons = 12;
-        param.Cb_neurons = 25;
-        param.M1_spike_wave_Fs = 24414;
-        param.Cb_spike_wave_Fs = 24414;
-        
-        
     elseif strcmp(animal, 'I110')
         param.training_block_names = {['I110-220314-103449'];
                                       ['I110-220315-094310'];
@@ -325,7 +308,7 @@ else
         
     end
     
-    
+    % Common parameter values
     param.codes_filename = {'_PreSleep' '_PostSleep'};
     param.block_names = {'Training1' 'Training2'};
     param.s_block_names = {'Sleep1' 'Sleep2'};
@@ -334,22 +317,33 @@ else
     save([rootpath,animal,'/Parameters.mat'], 'param');
 end
 
+% Code Blocks to run. 0: Initial data extraction. 1: General analyses. 2: Analyses that need something specified (a trial, a channel, etc.). 3: 3rd party interface (DataHigh only at present).
+% *: indicates an analysis that is just for showing sample results and does not need to be run for every animal
+
           %0 0 0 0 0 0 0 0 0  -  -  1  1  1  1  2  1  1  1  1  1  1  1  2  1  1  1  2  0  1  1  2  1  1  2  -  3  3  3  2                                    
           %1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40  
-enabled = [0 0 0 0 0 0 0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0,...  %Enables or disables various data processing. Enabled processes that require earlier, disabled processes will attempt to load data.
+enabled = [0 1 0 1 0 0 0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0,...  %Enables or disables various data processing. Enabled processes that require earlier, disabled processes will attempt to load data.
 ...         2  2  1* 2  2  1  1* 3  -  1  1  -  1  0  1  1  1  1  2  1  1  1  2* 2        3                                          
 ...       %41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100
-            1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]; %Enables or disables various data processing. Enabled processes that require earlier, disabled processes will attempt to load data.
+            0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]; %Enables or disables various data processing. Enabled processes that require earlier, disabled processes will attempt to load data.
 
-
+%%% Code Blocks %%%
+% The following code has be developed over the course of years. Later blocks will have different design philosophies as I became more familar with MATLAB
+% and the needs of the project. For instance, I wrote a lot of external functions for use in early blocks with the intent of facilitating orgization and 
+% reusability. Soon I realized that for most of them there was no chance of being used anywhere else and they were just cluttering the MATLAB folder. A more
+% recent example is saving plots. Most plots are created in a separate block from the analysis they use and therefore are quick to run. Most plots (esspecialy
+% those from a single animal) are also not used so, once again, saving them just causes clutter. It's easy enough to just rerun the plotting block with a
+% breakpoint on the "close all" line(s).
 %% Read TDT bins (1)
 if enabled(1)
     disp('Block 1...')
     addpath(genpath('Z:\Matlab for analysis\TDTMatlabSDK\TDTSDK\TDTbin2mat'))
     for day=1:param.days
+        %Extract training block data and save
         for block=1:param.blocks
             tbn = param.training_block_names{day, block};
             for sub_block = 1:size(tbn,1)
+                %The format of the data changed as time went on so early animals need different procedures
                 if strcmp(animal, 'I064')
                     all_data = SEV2mat([origin_rootpath,animal,'/',param.LFP_path,'/',tbn(sub_block,:)]);
                     [filtered_data, Fs_lfp] = filter_RS4_sev_data(all_data.RSn1,[32 32]);
@@ -364,7 +358,28 @@ if enabled(1)
                     Fs_wave = wave_data.streams.Wav1.fs;
                     save([origin_rootpath,animal,'/',param.Wave_path,'/',tbn(sub_block,:),'/WAV.mat'],'Wave1','Wave2','Fs_wave');
 
-                elseif strcmp(animal, 'I076') || strcmp(animal, 'I086') ||  strcmp(animal, 'I089') ||  strcmp(animal, 'I096') ||  strcmp(animal, 'I107') || strcmp(animal, 'I110') || strcmp(animal, 'I122')
+                elseif strcmp(animal, 'I060') || strcmp(animal, 'I061')
+                    all_data = TDTbin2mat([origin_rootpath,animal,'/',tbn(sub_block,:)],'TYPE',4);
+                    
+                    % Extract and save wave channel
+                    Wave1 = all_data.streams.Wav1.data;
+                    Wave2 = all_data.streams.Wav2.data;
+                    Fs_wave = all_data.streams.Wav1.fs;
+                    save([origin_rootpath,animal,'/',tbn(sub_block,:),'/WAV.mat'],'Wave1','Wave2','Fs_wave');
+                    
+                    % Extract and save M1 LFP
+                    LFPs1 = all_data.streams.LFP1.data;
+                    Fs_lfp = all_data.streams.LFP1.fs; %#ok<NASGU>
+                    save([origin_rootpath,animal,'/',tbn(sub_block,:),'/LFP_M1.mat'],'LFPs1','Fs_lfp','-v7.3');
+                    
+                    % Extract and save Cb LFP
+                    LFPs2 = all_data.streams.LFP2.data;
+                    Fs_lfp = all_data.streams.LFP2.fs;
+                    save([origin_rootpath,animal,'/',tbn(sub_block,:),'/LFP_Cb.mat'],'LFPs2','Fs_lfp','-v7.3');
+                    
+                    clear all_data Wave1 Wave2 Fs_wave LFPs1 LFPs2 fs_lfp
+                    
+                else
                     if ~strcmp(tbn, '')
                         all_data = TDTbin2mat([origin_rootpath,animal,'/',param.Wave_path,'/',tbn(sub_block,:)],'TYPE',4);
                         
@@ -398,35 +413,15 @@ if enabled(1)
                         
                         save([origin_rootpath,animal,'/',param.Wave_path,'/',tbn(sub_block,:),'/WAV.mat'],'Wave1','Wave2','Wave3','Fs_wave');
                     end
-                else
-                    all_data = TDTbin2mat([origin_rootpath,animal,'/',tbn(sub_block,:)],'TYPE',4);
-                    
-                    % Extract and save wave channel
-                    Wave1 = all_data.streams.Wav1.data;
-                    Wave2 = all_data.streams.Wav2.data;
-                    Fs_wave = all_data.streams.Wav1.fs;
-                    save([origin_rootpath,animal,'/',tbn(sub_block,:),'/WAV.mat'],'Wave1','Wave2','Fs_wave');
-                    
-                    % Extract and save M1 LFP
-                    LFPs1 = all_data.streams.LFP1.data;
-                    Fs_lfp = all_data.streams.LFP1.fs; %#ok<NASGU>
-                    save([origin_rootpath,animal,'/',tbn(sub_block,:),'/LFP_M1.mat'],'LFPs1','Fs_lfp','-v7.3');
-                    
-                    % Extract and save Cb LFP
-                    LFPs2 = all_data.streams.LFP2.data;
-                    Fs_lfp = all_data.streams.LFP2.fs;
-                    save([origin_rootpath,animal,'/',tbn(sub_block,:),'/LFP_Cb.mat'],'LFPs2','Fs_lfp','-v7.3');
-                    
-                    clear all_data Wave1 Wave2 Fs_wave LFPs1 LFPs2 fs_lfp
                 end
-                
             end
         end
         
+        %Extract sleep block data and save
         for block=1:size(param.sleep_block_names, 2)
             sbn = param.sleep_block_names{day, block};
             for sub_block = 1:size(sbn,1)
-                
+                %The format of the data changed as time went on so early animals need different procedures
                 if strcmp(animal, 'I064')
                     all_data = SEV2mat([origin_rootpath,animal,'/',param.LFP_path,'/',sbn(sub_block,:)]);
                     [filtered_data, Fs_lfp] = filter_RS4_sev_data(all_data.RSn1,[32 32]);
@@ -440,29 +435,8 @@ if enabled(1)
                     Wave2 = wave_data.streams.Wav2.data;
                     Fs_wave = wave_data.streams.Wav1.fs;
                     save([origin_rootpath,animal,'/',param.Wave_path,'/',sbn(sub_block,:),'/WAV.mat'],'Wave1','Wave2','Fs_wave');
- 
-                elseif strcmp(animal, 'I076') || strcmp(animal, 'I086') ||  strcmp(animal, 'I089') ||  strcmp(animal, 'I096') ||  strcmp(animal, 'I107') ||  strcmp(animal, 'I110') || strcmp(animal, 'I122')
-                    if ~strcmp(sbn, '')
-                        all_data = TDTbin2mat([origin_rootpath,animal,'/',param.Wave_path,'/',sbn(sub_block,:)],'TYPE',4);
-                        
-                        % Extract and save M1 LFP
-                        LFPs1 = all_data.streams.LFP1.data;
-                        Fs_lfp = all_data.streams.LFP1.fs; %#ok<NASGU>
-                        save([origin_rootpath,animal,'/',param.LFP_path,'/',sbn(sub_block,:),'/LFP_M1.mat'],'LFPs1','Fs_lfp','-v7.3');
-                        
-                        % Extract and save Cb LFP
-                        LFPs2 = all_data.streams.LFP2.data;
-                        Fs_lfp = all_data.streams.LFP2.fs;
-                        save([origin_rootpath,animal,'/',param.LFP_path,'/',sbn(sub_block,:),'/LFP_Cb.mat'],'LFPs2','Fs_lfp','-v7.3');
-                        
-                        Wave1 = all_data.streams.Wav1.data;
-                        Wave2 = all_data.streams.Wav2.data;
-                        Wave3 = all_data.streams.Wav3.data;
-                        Fs_wave = all_data.streams.Wav1.fs;
-                        
-                        save([origin_rootpath,animal,'/',param.Wave_path,'/',sbn(sub_block,:),'/WAV.mat'],'Wave1','Wave2','Wave3','Fs_wave');
-                    end
-                else
+                    
+                elseif strcmp(animal, 'I060') || strcmp(animal, 'I061')
                     all_data = TDTbin2mat([origin_rootpath,animal,'/',sbn(sub_block,:)],'TYPE',4);
                     
                     % Extract and save wave channel
@@ -482,6 +456,29 @@ if enabled(1)
                     save([origin_rootpath,animal,'/',sbn(sub_block,:),'/LFP_Cb.mat'],'LFPs2','Fs_lfp','-v7.3');
                     
                     clear all_data Wave1 Wave2 Fs_wave LFPs1 LFPs2 Fs_lfp
+                    
+                else
+                    if ~strcmp(sbn, '')
+                        all_data = TDTbin2mat([origin_rootpath,animal,'/',param.Wave_path,'/',sbn(sub_block,:)],'TYPE',4);
+                        
+                        % Extract and save M1 LFP
+                        LFPs1 = all_data.streams.LFP1.data;
+                        Fs_lfp = all_data.streams.LFP1.fs; %#ok<NASGU>
+                        save([origin_rootpath,animal,'/',param.LFP_path,'/',sbn(sub_block,:),'/LFP_M1.mat'],'LFPs1','Fs_lfp','-v7.3');
+                        
+                        % Extract and save Cb LFP
+                        LFPs2 = all_data.streams.LFP2.data;
+                        Fs_lfp = all_data.streams.LFP2.fs;
+                        save([origin_rootpath,animal,'/',param.LFP_path,'/',sbn(sub_block,:),'/LFP_Cb.mat'],'LFPs2','Fs_lfp','-v7.3');
+                        
+                        % Extract and save wave data
+                        Wave1 = all_data.streams.Wav1.data;
+                        Wave2 = all_data.streams.Wav2.data;
+                        Wave3 = all_data.streams.Wav3.data;
+                        Fs_wave = all_data.streams.Wav1.fs;
+                        
+                        save([origin_rootpath,animal,'/',param.Wave_path,'/',sbn(sub_block,:),'/WAV.mat'],'Wave1','Wave2','Wave3','Fs_wave');
+                    end
                 end
             end
         end
@@ -496,20 +493,20 @@ if enabled(2)
         durMAT = nan(5,size(cat(1,param.sleep_block_names{day,:}, param.training_block_names{day,:}),1));
         dM_idx = 0;
         for block=1:param.blocks
+            
+            % Record sleep block durations
             if all([day,block] <= size(param.sleep_block_names))
                 sbn = param.sleep_block_names{day, block};
                 for sub_block = 1:size(sbn,1)
                     dM_idx = dM_idx + 1;
                     ssbn = sbn(sub_block,:);
-                    if strcmp(animal, 'I076') || strcmp(animal, 'I086') || strcmp(animal, 'I089') ||  strcmp(animal, 'I096') ||  strcmp(animal, 'I107') ||  strcmp(animal, 'I110') || strcmp(animal, 'I122')
-                        ssbn = [param.LFP_path,'/',ssbn]; %#ok<AGROW>
-                    elseif strcmp(animal, 'I064')
+                    %The format of the data changed as time went on so early animals need different procedures
+                    if ~(strcmp(animal, 'I060') || strcmp(animal, 'I061'))
                         ssbn = [param.LFP_path,'/',ssbn]; %#ok<AGROW>
                     end
-                    %[lenLFP_M1, lenLFP_Cb] = get_LFP_length([origin_rootpath,animal,'/',ssbn]);
                     durMAT(1:2,dM_idx) = get_LFP_length([origin_rootpath,animal,'/',ssbn]);
                     
-                    
+                    %Something happened with I086 on day 4, block 1 that needed special intervention
                     if strcmp(animal, 'I086') && day == 4 && block ==1
                         durMAT(5,dM_idx) = 4200;
                     else
@@ -517,17 +514,17 @@ if enabled(2)
                     end
                 end
             end
+            
+            % Record training block durations
             if all([day,block] <= size(param.training_block_names))
                 tbn = param.training_block_names{day, block};
                 for sub_block = 1:size(tbn,1)
                     dM_idx = dM_idx + 1;
                     tsbn = tbn(sub_block,:);
-                    if strcmp(animal, 'I076') || strcmp(animal, 'I086')  || strcmp(animal, 'I089') ||  strcmp(animal, 'I096') ||  strcmp(animal, 'I107') ||  strcmp(animal, 'I110') || strcmp(animal, 'I122')
-                        tsbn = [param.LFP_path,'/',tsbn]; %#ok<AGROW>
-                    elseif strcmp(animal, 'I064')
+                    %The format of the data changed as time went on so early animals need different procedures
+                    if ~(strcmp(animal, 'I060') || strcmp(animal, 'I061'))
                         tsbn = [param.LFP_path,'/',tsbn]; %#ok<AGROW>
                     end
-                    %[lenLFP_M1, lenLFP_Cb] = get_LFP_length([origin_rootpath,animal,'/',tsbn]);
                     
                     [M1L, CbL] = get_LFP_length([origin_rootpath,animal,'/',tsbn]);
                     durMAT(1:2,dM_idx) = [M1L; CbL];
@@ -544,7 +541,10 @@ if enabled(2)
 end
 
 %% Identify Bad Channels (3)
-%Displays the block LFP and prompts the user to enter an array
+% Displays the block LFP and prompts the user to enter an array of bad channels for each training block.
+% Once all training block have been evaluated, the number of times each channel was indentified as bad is 
+% displayed and a final array of bad channels is requested. That array is used in all following analyses.
+
 if enabled(3)
     disp('Block 3...')
     all_M1_bad_chans = [];
@@ -553,19 +553,23 @@ if enabled(3)
         for block=1:param.blocks
             tbn = param.training_block_names{day, block};
             for sub_block = 1:size(tbn,1)
-                if strcmp(animal, 'I076') || strcmp(animal, 'I064') || strcmp(animal, 'I086') || strcmp(animal, 'I089') ||  strcmp(animal, 'I096') ||  strcmp(animal, 'I107') ||  strcmp(animal, 'I110') || strcmp(animal, 'I122')
-                    load([origin_rootpath,animal,'/',param.LFP_path,'/',tbn(sub_block,:),'/LFP_M1.mat']);
-                else
+                %The format of the data changed as time went on so early animals need different procedures
+                if strcmp(animal, 'I060') || strcmp(animal, 'I061')
                     load([origin_rootpath,animal,'/',tbn(sub_block,:),'/LFP_M1.mat']);
+                else
+                    load([origin_rootpath,animal,'/',param.LFP_path,'/',tbn(sub_block,:),'/LFP_M1.mat']);
                 end
                 param.M1_Fs = Fs_lfp;
-                if strcmp(animal, 'I076') || strcmp(animal, 'I064') || strcmp(animal, 'I086') || strcmp(animal, 'I089') ||  strcmp(animal, 'I096') ||  strcmp(animal, 'I107') ||  strcmp(animal, 'I110') || strcmp(animal, 'I122')
-                    load([origin_rootpath,animal,'/',param.LFP_path,'/',tbn(sub_block,:),'/LFP_Cb.mat']);
-                else
+                
+                %The format of the data changed as time went on so early animals need different procedures
+                if strcmp(animal, 'I060') || strcmp(animal, 'I061')
                     load([origin_rootpath,animal,'/',tbn(sub_block,:),'/LFP_Cb.mat']);
+                else
+                    load([origin_rootpath,animal,'/',param.LFP_path,'/',tbn(sub_block,:),'/LFP_Cb.mat']);
                 end
                 param.Cb_Fs = Fs_lfp;
                 
+                %User must examine channel LFPs visually and identify bad channels using command window
                 hold on
                 for c = 1:size(LFPs1,1)
                     plot(LFPs1(c,1:min(1000000,size(LFPs1,2)))+(c*0.001))
@@ -588,6 +592,7 @@ if enabled(3)
             end
         end
     end
+    %Displays a count of how many times each channel was marked as bad and prompts user for the finalized list of bad channels
     [ct, ch] = hist(all_M1_bad_chans,unique(all_M1_bad_chans));
     disp('M1: Surround the channels you wish to exclude with square brackets. Press return when done.')
     disp(ch)
@@ -604,6 +609,7 @@ if enabled(3)
         mkdir([rootpath,animal]);
     end
     
+    %Record and save selections
     param.M1_bad_chans = M1_bad_chans;
     param.M1_chans = size(LFPs1,1);
     good_chans = 1:param.M1_chans;
@@ -625,20 +631,24 @@ end
 if enabled(4)
     disp('Block 4...')
     for day=1:param.days
+        %Make folder for each day
         if ~exist([rootpath,animal,'/Day',num2str(day)],'dir')
             mkdir([rootpath,animal,'/Day',num2str(day)]);
         end
         load([origin_rootpath,animal,'/',param.durFiles(day,:),'.mat']);
         dM_idx = 0;
         for block=1:size(param.s_block_names,2)
+            %Make folder for each sleep block
             if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{block}],'dir')
                 mkdir([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{block}]);
             end
         end
         for block=1:param.blocks
+            %Make folder for each reach block
             if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block}],'dir')
                 mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block}]);
             end
+            %Preallocation
             M1_LFP_t = nan(param.M1_chans,0);
             Cb_LFP_t = nan(param.Cb_chans,0);
             WAVE1_t = nan(1,0);
@@ -650,22 +660,9 @@ if enabled(4)
                 for sub_block = 1:size(sbn,1)
                     dM_idx = dM_idx + 1;
                     
-%                 load([origin_rootpath,animal,'/',sbn(sub_block,:),'/LFP_M1.mat']);
-%                 load([origin_rootpath,animal,'/',sbn(sub_block,:),'/LFP_Cb.mat']);
-%                 load([origin_rootpath,animal,'/',sbn(sub_block,:),'/WAV.mat']);
-%
-%                 Fs = Fs_lfp;
-%                 truncation_samp = round(durMAT(5,dM_idx)*Fs);
-%
-%                 M1_LFP_t = cat(2, M1_LFP_t, LFPs1(:,1:truncation_samp));
-%                 Cb_LFP_t = cat(2, Cb_LFP_t, LFPs2(:,1:truncation_samp));
-%                 WAVE1_t = cat(2, WAVE1_t, Wave1(1:truncation_samp));
-%                 WAVE2_t = cat(2, WAVE2_t, Wave2(1:truncation_samp));
+                    % Before the sleep analysis really got underway the sleep LFPs were truncated here. 
+                    % Now there is a code block in Sleep_Analysis.m that does that.
                 end
-                
-%             save([rootpath,animal,'/Day',num2str(day),'/',block_names_sleep{block},'/LFP_M1_Truncated.mat'],'M1_LFP_t','Fs');
-%             save([rootpath,animal,'/Day',num2str(day),'/',block_names_sleep{block},'/LFP_Cb_Truncated.mat'],'Cb_LFP_t','Fs');
-%             save([rootpath,animal,'/Day',num2str(day),'/',block_names_sleep{block},'/WAV_Truncated.mat'],'WAVE1_t','WAVE2_t','Fs');
             end
             
             if all([day,block] <= size(param.training_block_names))
@@ -673,23 +670,24 @@ if enabled(4)
                 for sub_block = 1:size(tbn,1)
                     dM_idx = dM_idx + 1;
                     
-                    if strcmp(animal, 'I076') || strcmp(animal, 'I064') || strcmp(animal, 'I086') || strcmp(animal, 'I089') ||  strcmp(animal, 'I096') ||  strcmp(animal, 'I107') ||  strcmp(animal, 'I110') ||  strcmp(animal, 'I122')
-                        load([origin_rootpath,animal,'/',param.LFP_path,'/',tbn(sub_block,:),'/LFP_M1.mat']);
-                        load([origin_rootpath,animal,'/',param.LFP_path,'/',tbn(sub_block,:),'/LFP_Cb.mat']);
-                        load([origin_rootpath,animal,'/',param.Wave_path,'/',tbn(sub_block,:),'/WAV.mat']);
-                    else
+                    %The format of the data changed as time went on so early animals need different procedures
+                    if strcmp(animal, 'I060') || strcmp(animal, 'I061') 
                         load([origin_rootpath,animal,'/',tbn(sub_block,:),'/LFP_M1.mat']);
                         load([origin_rootpath,animal,'/',tbn(sub_block,:),'/LFP_Cb.mat']);
                         load([origin_rootpath,animal,'/',tbn(sub_block,:),'/WAV.mat']);
+                    else
+                        load([origin_rootpath,animal,'/',param.LFP_path,'/',tbn(sub_block,:),'/LFP_M1.mat']);
+                        load([origin_rootpath,animal,'/',param.LFP_path,'/',tbn(sub_block,:),'/LFP_Cb.mat']);
+                        load([origin_rootpath,animal,'/',param.Wave_path,'/',tbn(sub_block,:),'/WAV.mat']);
                     end
                     
-                    
-                    
+                    %Find the shortest duration in durMAT
                     M1_truncation_samp = floor(durMAT(5,dM_idx)*param.M1_Fs);
                     Cb_truncation_samp = floor(durMAT(5,dM_idx)*param.Cb_Fs);
                     param.Wave_Fs = Fs_wave;
                     Wave_truncation_samp = floor(durMAT(5,dM_idx)*param.Wave_Fs);
                     
+                    %Truncate recordings to said shortest duration and create blank recordings if they are missing (e.g. M1 in I110)
                     if isempty(LFPs1)
                         M1_LFP_t = zeros(0,(size(M1_LFP_t,2)+M1_truncation_samp));
                     else
@@ -701,6 +699,7 @@ if enabled(4)
                         Cb_LFP_t = cat(2, Cb_LFP_t, LFPs2(:,1:Cb_truncation_samp));
                     end
                     
+                    %Pad wave channels with zeros if it is too short
                     if length(WAVE1_t) < Wave_truncation_samp
                         Wave1(Wave_truncation_samp) = 0;
                         Wave2(Wave_truncation_samp) = 0;
@@ -709,6 +708,7 @@ if enabled(4)
                         end
                     end
                     
+                    %Truncate wave channels
                     WAVE1_t = cat(2, WAVE1_t, Wave1(1:Wave_truncation_samp));
                     WAVE2_t = cat(2, WAVE2_t, Wave2(1:Wave_truncation_samp));
                     if exist('Wave3','var')
@@ -717,6 +717,7 @@ if enabled(4)
                     
                 end
                 
+                %Fix some problem with I061
                 if strcmp(animal,'I061') && day == 4 && block == 2
                     M1_LFP_t = M1_LFP_t(:,floor(param.M1_Fs * 8 * 60):end);
                     Cb_LFP_t = Cb_LFP_t(:,floor(param.Cb_Fs * 8 * 60):end);
@@ -724,6 +725,7 @@ if enabled(4)
                     WAVE2_t = WAVE2_t(:,floor(param.Wave_Fs * 8 * 60):end);
                 end
                 
+                %Save all
                 save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/LFP_M1_Truncated.mat'],'M1_LFP_t');
                 save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/LFP_Cb_Truncated.mat'],'Cb_LFP_t');
                 save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/WAV_Truncated.mat'],'WAVE1_t','WAVE2_t');
@@ -810,22 +812,23 @@ if enabled(5)
     shared_data.GUI_data = cell(param.days, param.blocks);
     for day=1:param.days
         for block=1:param.blocks
-            
-            clear data;
-            
+            %Load GUI data
             if exist([origin_rootpath,animal,'/Day',num2str(day),'/Reach_Vids/Results/D',num2str(day),param.codes_filename{block},'_GUI.mat'], 'file')
                 load([origin_rootpath,animal,'/Day',num2str(day),'/Reach_Vids/Results/D',num2str(day),param.codes_filename{block},'_GUI.mat']);
             else
                 warning('Original GUI data not found. Loading local copy.')
                 load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             end
+            %Calculate number of reach attempts and if there are too few normal attempts, then convert forceps reaches to normal reaches
             trial_outcomes = cellfun(@str2double,data(:,3));
             if length(trial_outcomes(trial_outcomes < 2)) < 2 %minimum number of trials where the rat reaches for a pellet on the arm
-                warning(['Too few reaches in day ', num2str(day), ', block ', num2str(block), '. Converting forcepts reaches to normal reaches.'])
+                warning(['Too few reaches in day ', num2str(day), ', block ', num2str(block), '. Converting forceps reaches to normal reaches.'])
                 trial_outcomes(trial_outcomes>3) = trial_outcomes(trial_outcomes>3) - 4;
                 data(:,3) = cellstr(num2str(trial_outcomes));
             end
+            %Calculate delay between trial start and reach onset
             Oseconds = find_reach_times(data,param.WAV_video_offset,param.Camera_framerate);
+            %Save
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat'],'data');
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/reach_onset_delays.mat'],'Oseconds');
             
@@ -838,7 +841,7 @@ if enabled(5)
     clear day block shared_data;
 end
 
-%% Snapshot Extraction (6)
+%% Snapshot Extraction and Frequency Filtering(6)
 
 if enabled(6)
     disp('Block 6...')
@@ -846,15 +849,18 @@ if enabled(6)
     rmpath(genpath('Z:\Matlab for analysis\eeglab\functions\octavefunc\signal'))
     for day=1:param.days
         for block=1:param.blocks
-                           
+            
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/reach_onset_delays.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/LFP_M1_Truncated.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/LFP_Cb_Truncated.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/WAV_Truncated.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             
+            %Create 8 second snapshots centered on reach onset with regular LFP
             [M1_snapshots_raw, Cb_snapshots_raw] = snapshot_extraction(M1_LFP_t, Cb_LFP_t, WAVE2_t, param.M1_Fs, param.Cb_Fs, param.Wave_Fs, Oseconds, data, 4, 4);
             
+            % Do not perform frequency filtering on just the snapshots. The short durations make the filtering fail to produce accurate results.
+            %Filter LFPs into 3 frequency ranges
             if isempty(M1_LFP_t)
                 M1_1_4_filt_LFP = M1_LFP_t;
                 M1_3_6_filt_LFP = M1_LFP_t;
@@ -874,6 +880,7 @@ if enabled(6)
                 Cb_6_14_filt_LFP = eegfilt(Cb_LFP_t, param.Cb_Fs, 6, 14);
             end
             
+            %Create 8 second snapshots centered on reach onset with filtered LFP and save all
             [M1_1_4_snapshots_raw, Cb_1_4_snapshots_raw] = snapshot_extraction(M1_1_4_filt_LFP, Cb_1_4_filt_LFP, WAVE2_t, param.M1_Fs, param.Cb_Fs, param.Wave_Fs, Oseconds, data, 4, 4);
             [M1_3_6_snapshots_raw, Cb_3_6_snapshots_raw] = snapshot_extraction(M1_3_6_filt_LFP, Cb_3_6_filt_LFP, WAVE2_t, param.M1_Fs, param.Cb_Fs, param.Wave_Fs, Oseconds, data, 4, 4);
             [M1_6_14_snapshots_raw, Cb_6_14_snapshots_raw] = snapshot_extraction(M1_6_14_filt_LFP, Cb_6_14_filt_LFP, WAVE2_t, param.M1_Fs, param.Cb_Fs, param.Wave_Fs, Oseconds, data, 4, 4);
@@ -887,6 +894,8 @@ if enabled(6)
 end
 
 %% Modify Bad Channels (6.9)
+% This is for quickly adjusting which channels are marked as bad. This is used
+% when new bad channels are identified when marking the snapshots (block 7).
 
 if false
     disp('M1: Surround the channels you wish to exclude with square brackets. Press return when done.')
@@ -914,6 +923,9 @@ if false
 end
 
 %% Identify Bad Trials (7)
+% Displays the LFP snapshots and prompts the user mark those that are bad.
+% Use arrow keys to navigate between snapshots and spacebar to mark/unmark
+% noisy periods. Navigate past final snapshot to save and close.
         
 if enabled(7)
     disp('Block 7...')
@@ -923,6 +935,7 @@ if enabled(7)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/reach_onset_delays.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             
+            %Identify all non-reach trials
             outcomes = cellfun(@str2num,data(:,3));
             bad_outcome_trials = 1:size(data,1);
             bad_outcome_trials(outcomes == 1 | outcomes == 0) = [];
@@ -930,13 +943,17 @@ if enabled(7)
             if isempty(M1_snapshots_raw)
                 M1_bad_trials = bad_outcome_trials;
             else
+                %Function that operates the GUI
                 M1_bad_trials=visualizeTrialData(M1_snapshots_raw,param.M1_bad_chans,outcomes);
+                %Bad trials are all identified trails and all non-reach trials
                 M1_bad_trials = sort([M1_bad_trials, bad_outcome_trials]);
             end
             if isempty(Cb_snapshots_raw)
                 Cb_bad_trials = bad_outcome_trials;
             else
+                %Function that operates the GUI
                 Cb_bad_trials=visualizeTrialData(Cb_snapshots_raw,param.Cb_bad_chans,outcomes);
+                %Bad trials are all identified trails and all non-reach trials
                 Cb_bad_trials = sort([Cb_bad_trials, bad_outcome_trials]);
             end
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Bad_trials.mat'],'M1_bad_trials','Cb_bad_trials');
@@ -953,6 +970,7 @@ if enabled(8)
     disp('Block 8...')
     M1_block_lengths = zeros(size(param.block_names));
     Cb_block_lengths = zeros(size(param.block_names));
+    M1_Cb_block_lengths = zeros(size(param.block_names));
     all_M1_snapshots = [];
     all_Cb_snapshots = [];
     all_M1_1_4_snapshots = [];
@@ -966,17 +984,22 @@ if enabled(8)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Bad_trials.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/LFP_Snapshots.mat']);
             
+            %Remove bad channels and trials from snapshots
             M1_snapshots_raw(param.M1_bad_chans,:,:)=[];
             M1_snapshots_raw(:,:,M1_bad_trials)=[];
             Cb_snapshots_raw(param.Cb_bad_chans,:,:)=[];
             Cb_snapshots_raw(:,:,Cb_bad_trials)=[];
             
+            %Record number of good trials
             M1_block_lengths(day, block) = size(M1_snapshots_raw, 3);
             Cb_block_lengths(day, block) = size(Cb_snapshots_raw, 3);
+            M1_Cb_block_lengths(day, block) = size(M1_snapshots_raw, 3) - length(setdiff(Cb_bad_trials,M1_bad_trials));
             
+            %Collect all good snapshots from all days and blocks
             all_M1_snapshots = cat(3,all_M1_snapshots,M1_snapshots_raw);
             all_Cb_snapshots = cat(3,all_Cb_snapshots,Cb_snapshots_raw);
             
+            %Remove bad channels and trials from filtered snapshots
             M1_1_4_snapshots_raw(param.M1_bad_chans,:,:) = []; 
             M1_3_6_snapshots_raw(param.M1_bad_chans,:,:) = []; 
             M1_6_14_snapshots_raw(param.M1_bad_chans,:,:) = []; 
@@ -991,24 +1014,23 @@ if enabled(8)
             Cb_3_6_snapshots_raw(:,:,Cb_bad_trials) = []; 
             Cb_6_14_snapshots_raw(:,:,Cb_bad_trials) = []; 
             
+            %Collect all good filtered snapshots from all days and blocks
             all_M1_1_4_snapshots = cat(3,all_M1_1_4_snapshots,M1_1_4_snapshots_raw);
             all_Cb_1_4_snapshots = cat(3,all_Cb_1_4_snapshots,Cb_1_4_snapshots_raw);
             all_M1_3_6_snapshots = cat(3,all_M1_3_6_snapshots,M1_3_6_snapshots_raw);
             all_Cb_3_6_snapshots = cat(3,all_Cb_3_6_snapshots,Cb_3_6_snapshots_raw);
             all_M1_6_14_snapshots = cat(3,all_M1_6_14_snapshots,M1_6_14_snapshots_raw);
             all_Cb_6_14_snapshots = cat(3,all_Cb_6_14_snapshots,Cb_6_14_snapshots_raw);
-            
-%             M1_1_4_snapshots = M1_1_4_snapshots_raw;
-%             M1_3_6_snapshots = M1_3_6_snapshots_raw;
-%             M1_6_14_snapshots = M1_6_14_snapshots_raw;
-%             Cb_1_4_snapshots = Cb_1_4_snapshots_raw;
-%             Cb_3_6_snapshots = Cb_3_6_snapshots_raw;
-%             Cb_6_14_snapshots = Cb_6_14_snapshots_raw;
-%             
-%             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Filtered_LFP_Snapshots.mat'],'M1_1_4_snapshots', 'Cb_1_4_snapshots','M1_3_6_snapshots', 'Cb_3_6_snapshots','M1_6_14_snapshots', 'Cb_6_14_snapshots');
         end
     end
     
+    load([rootpath,animal,'/Shared_Data.mat'])
+    shared_data.M1_reach_trial_num = M1_block_lengths;
+    shared_data.Cb_reach_trial_num = Cb_block_lengths;
+    shared_data.M1_Cb_reach_trial_num = M1_Cb_block_lengths;
+    save([rootpath,animal,'/Shared_Data.mat'], 'shared_data')
+    
+    %Use all days' snapshots to normalize filtered and unfiltered snapshots
     [all_M1_snapshots_n, all_M1_snapshots_c] = normalize(all_M1_snapshots);
     [all_Cb_snapshots_n, all_Cb_snapshots_c] = normalize(all_Cb_snapshots);
     [all_M1_1_4_snapshots_n, all_M1_1_4_snapshots_c] = normalize(all_M1_1_4_snapshots);
@@ -1020,6 +1042,7 @@ if enabled(8)
     
     for day=1:param.days
         for block=1:param.blocks
+            %Return normalized snapshots to their respective days and blocks
             M1_snapshots_n = all_M1_snapshots_n(:,:,1:M1_block_lengths(day, block));
             all_M1_snapshots_n(:,:,1:M1_block_lengths(day, block)) = [];
             M1_snapshots_c = all_M1_snapshots_c(:,:,1:M1_block_lengths(day, block));
@@ -1060,6 +1083,7 @@ if enabled(8)
             Cb_6_14_snapshots = all_Cb_6_14_snapshots_c(:,:,1:Cb_block_lengths(day, block));
             all_Cb_6_14_snapshots_c(:,:,1:Cb_block_lengths(day, block)) = [];
             
+            %save
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Normalized_full_Snapshots.mat'],'M1_snapshots_n','Cb_snapshots_n','M1_snapshots_c','Cb_snapshots_c');
             
             M1_snapshots = M1_snapshots_c;
@@ -1074,67 +1098,11 @@ if enabled(8)
     clearvars -except code_rootpath rootpath origin_rootpath animal param enabled;
 end
 
-%% Record number of good trials(9)
+%% [Deleted] (9 & 10)
+% These blocks were removed or incorporated into the preceding blocks long ago in an early code refactoring.
 
-if enabled(9)
-    load([rootpath,animal,'/Shared_Data.mat'])
-    shared_data.M1_reach_trial_num = nan(param.days,param.blocks);
-    shared_data.Cb_reach_trial_num = nan(param.days,param.blocks);
-    shared_data.M1_Cb_reach_trial_num = nan(param.days,param.blocks);
-    for day=1:param.days
-        for block=1:param.blocks
-            load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Bad_trials.mat'])
-            load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
-            all_bad_trials = union(M1_bad_trials, Cb_bad_trials);
-            shared_data.M1_reach_trial_num(day,block) = size(data,1) - length(M1_bad_trials);
-            shared_data.Cb_reach_trial_num(day,block) = size(data,1) - length(Cb_bad_trials);
-            shared_data.M1_Cb_reach_trial_num(day,block) = size(data,1) - length(all_bad_trials);
-        end
-    end
-    save([rootpath,animal,'/Shared_Data.mat'], 'shared_data')
-    clearvars -except code_rootpath rootpath origin_rootpath animal param enabled;
-end
-
-% %% Recenter Snapshots (10)
-% 
-% if enabled(10)
-%     tag2 = '';
-%     if auditory_evoked_response_removal
-%         tag2 = [tag2 '_AER']; %#ok<UNRCH> Depending on the evoked response removal settings tag2 may remain empty. This is the intended behavior.
-%     end
-%     for day=1:param.days
-%         for block=1:param.blocks
-%             
-%             load([rootpath,animal,'/Day',num2str(day),'/',block_names{block},'/reach_onset_delays.mat']);
-%             load([rootpath,animal,'/Day',num2str(day),'/',block_names{block},'/Normalized_full_Snapshots', tag2, '.mat']);
-%             load([rootpath,animal,'/Day',num2str(day),'/',block_names{block},'/Bad_trials.mat']);
-%             
-%             M1_Oseconds = Oseconds;
-%             Cb_Oseconds = Oseconds;
-%             M1_Oseconds(M1_bad_trials)=[];
-%             Cb_Oseconds(Cb_bad_trials)=[];
-%             
-%             [M1_channels, M1_ticks, M1_trials] = size(M1_snapshots_c);
-%             [Cb_channels, Cb_ticks, Cb_trials] = size(Cb_snapshots_c);
-%             M1_snapshots = zeros(M1_channels, round(8*Fs)+1, M1_trials);
-%             Cb_snapshots = zeros(Cb_channels, round(8*Fs)+1, Cb_trials);
-%             
-%             for trial=1:M1_trials
-%                 M1_snapshots(:,:,trial) = M1_snapshots_c(:,round(M1_Oseconds(trial) * Fs):(round(M1_Oseconds(trial) * Fs) + round(8 * Fs)),trial);
-%             end
-%             for trial=1:Cb_trials
-%                 Cb_snapshots(:,:,trial) = Cb_snapshots_c(:,round(Cb_Oseconds(trial) * Fs):(round(Cb_Oseconds(trial) * Fs) + round(8 * Fs)),trial);
-%             end
-%             
-%             save([rootpath,animal,'/Day',num2str(day),'/',block_names{block},'/Normalized_Snapshots', tag2, '.mat'], 'M1_snapshots', 'Cb_snapshots', 'Fs');
-%             
-%             clearvars -except code_rootpath tag2 tag rootpath origin_rootpath animal block_names training_block_names sleep_block_names day days block blocks durFiles enabled param auditory_evoked_response_removal motor_evoked_response_removal codes_filename;
-%         end
-%     end
-%     clear day block tag2;
-% end
-% 
-% %% Correct Motor Evoked Response (11)
+%% Correct Motor Evoked Response (11)
+% % Code for removing evoked responce. Discarded early on when we found it made the results worse.
 % 
 % if enabled(11)
 %     tag2 = '';
@@ -1156,6 +1124,7 @@ end
 % end
 
 %% ERSP and ITC Calculation (12)
+% Use newtimef() to calcuate ERSPs and ITCs. Data analysis behind Lemke 2019 Fig 2b
         
 if enabled(12)
     disp('Block 12...')
@@ -1164,9 +1133,11 @@ if enabled(12)
         for block=1:param.blocks
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Normalized_Snapshots', '.mat']);
             
+            %Calculate ERSP data
             [M1_ersp_data, M1_itc_data, M1_times, M1_freqs] = ersp_calc(M1_snapshots, param.M1_Fs);
             [Cb_ersp_data, Cb_itc_data, Cb_times, Cb_freqs] = ersp_calc(Cb_snapshots, param.Cb_Fs);
             
+            %Save
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/ERSP_reach', '.mat'],'M1_ersp_data','Cb_ersp_data','M1_times', 'M1_freqs','Cb_times', 'Cb_freqs', '-v7.3')
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/ITC_reach', '.mat'],'M1_itc_data','Cb_itc_data','M1_times', 'M1_freqs','Cb_times', 'Cb_freqs', '-v7.3')
             
@@ -1178,45 +1149,51 @@ if enabled(12)
 end
 
 %% Create ERSP Heatmaps and Bar Graphs (13)
+% Create mean ERSP heatmaps and bar graphs across all channels. Lemke 2019 Fig 2b
 
 if enabled(13)
     disp('Block 13...')
+    
+    %Parameters
     freq_range = [1.5 4];  %in hz
     time_range = [-250 750]; %in ms
+    days_to_plot = [1 5];
+    power_inc_thresh = 0.5;
+    
+    %Pre-allocation
     day_M1_means = zeros(1,param.days);
     day_Cb_means = zeros(1,param.days);
     day_M1_err = zeros(1,param.days);
     day_Cb_err = zeros(1,param.days);
-    days_to_plot = [1 5];
-    power_inc_thresh = 0.5;
-    
     M1_day_ch_means = cell(1, param.days);
     Cb_day_ch_means = cell(1, param.days);
+    
     for day=1:param.days
         day_M1_ersp = [];
         day_Cb_ersp = [];
         for block=1:param.blocks
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/ERSP_reach', '.mat']);
+            % The commented out methods below are the same used in other papers but they use squaring instead of absolute value
+            % which creates artificailly increase the differences between the highs and the lows. 
+            % Just another way this whole scientific field is rife with bad practices.
             
-            %M1_heatmap = create_power_heatmap((M1_ersp_data .* conj(M1_ersp_data)), times, freqs);
-            M1_heatmap = create_power_heatmap(abs(M1_ersp_data), M1_times, M1_freqs);
+            %Create heatmap figures
+            M1_heatmap = create_power_heatmap(abs(M1_ersp_data), M1_times, M1_freqs); %M1_heatmap = create_power_heatmap((M1_ersp_data .* conj(M1_ersp_data)), times, freqs);
             saveas(M1_heatmap, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/M1_power_heatmap', '.fig'])
             close all
             
-            %Cb_heatmap = create_power_heatmap((Cb_ersp_data .* conj(Cb_ersp_data)), times, freqs);
-            Cb_heatmap = create_power_heatmap(abs(Cb_ersp_data), Cb_times, Cb_freqs);
+            Cb_heatmap = create_power_heatmap(abs(Cb_ersp_data), Cb_times, Cb_freqs); %Cb_heatmap = create_power_heatmap((Cb_ersp_data .* conj(Cb_ersp_data)), times, freqs);
             saveas(Cb_heatmap, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Cb_power_heatmap', '.fig'])
             close all
             
-            %real_data = M1_ersp_data .* conj(M1_ersp_data);
-            real_data = abs(M1_ersp_data);
+            %Combine block data for full-day analyses
+            real_data = abs(M1_ersp_data); %real_data = M1_ersp_data .* conj(M1_ersp_data);
             data_mean = mean(real_data(:,:,M1_times>-1500&M1_times<-500,:),3);
             data_std = std(real_data(:,:,M1_times>-1500&M1_times<-500,:),[],3);
             zs_data = (real_data-data_mean) ./ data_std;
             day_M1_ersp = cat(4, day_M1_ersp, zs_data(:,(M1_freqs>=freq_range(1)) & (M1_freqs<=freq_range(2)),(M1_times>=time_range(1)) & (M1_times<=time_range(2)),:));
             
-            %real_data = Cb_ersp_data .* conj(Cb_ersp_data);
-            real_data = abs(Cb_ersp_data);
+            real_data = abs(Cb_ersp_data); %real_data = Cb_ersp_data .* conj(Cb_ersp_data);
             data_mean = mean(real_data(:,:,Cb_times>-1500&Cb_times<-500,:),3);
             data_std = std(real_data(:,:,Cb_times>-1500&Cb_times<-500,:),[],3);
             zs_data = (real_data-data_mean) ./ data_std;
@@ -1224,6 +1201,7 @@ if enabled(13)
             
             clear M1_heatmap Cb_heatmap M1_ersp_data Cb_ersp_data times freqs;
         end
+        %Analyize day data
         M1_day_ch_means{day} = squeeze(mean(mean(day_M1_ersp,3),2));
         Cb_day_ch_means{day} = squeeze(mean(mean(day_Cb_ersp,3),2));
         
@@ -1235,6 +1213,7 @@ if enabled(13)
         clear day_M1_ersp day_Cb_ersp;
     end
     
+    %Make figures
     bar(days_to_plot, day_M1_means(days_to_plot));
     hold on
     er = errorbar(days_to_plot, day_M1_means(days_to_plot), day_M1_err(days_to_plot), day_M1_err(days_to_plot));
@@ -1266,6 +1245,7 @@ if enabled(13)
 end
 
 %% Plot Average Success and Fail LFP (14)
+% Graph the mean LFP of success trials and the mean LFP of fail trials.
 
 if enabled(14)
     disp('Block 14...')
@@ -1276,11 +1256,13 @@ if enabled(14)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Bad_trials.mat']);
             
+            %Split snapshots into those from successful trials and those from failed trials
             [M1_succ_snapshots, M1_fail_snapshots] = success_fail_split(M1_snapshots, data, M1_bad_trials, 3);
             [Cb_succ_snapshots, Cb_fail_snapshots] = success_fail_split(Cb_snapshots, data, Cb_bad_trials, 3);
             [M1_succ_filt, M1_fail_filt] = success_fail_split(M1_1_4_snapshots, data, M1_bad_trials, 3);
             [Cb_succ_filt, Cb_fail_filt] = success_fail_split(Cb_1_4_snapshots, data, Cb_bad_trials, 3);
             
+            %plot mean M1 LFP for success and fail populations (if they both exist)
             x_axis = round(-4 * param.M1_Fs):round(4 * param.M1_Fs);
             if isempty(M1_succ_snapshots)
                 disp(['Day: ', num2str(day), ', Block: ', num2str(block), ' - No successful M1 trials'])
@@ -1291,8 +1273,6 @@ if enabled(14)
                 M1_ave_fail_snapshots = mean(mean(M1_fail_snapshots, 1), 3);
                 M1_succ_snapshots_filt = mean(mean(M1_succ_filt, 1), 3);
                 M1_fail_snapshots_filt = mean(mean(M1_fail_filt, 1), 3);
-                [M1_succ_snapshots_filt, ~] = normalize(M1_succ_snapshots_filt);
-                [M1_fail_snapshots_filt, ~] = normalize(M1_fail_snapshots_filt);
                 plot(x_axis,M1_succ_snapshots_filt,x_axis,M1_fail_snapshots_filt)
                 legend('Successes','Failures')
                 axis([-750 750 -3 3])
@@ -1300,6 +1280,7 @@ if enabled(14)
                 close all
             end
             
+            %plot mean Cb LFP for success and fail populations (if they both exist)
             x_axis = round(-4 * param.Cb_Fs):round(4 * param.Cb_Fs);
             if isempty(Cb_succ_snapshots)
                 disp(['Day: ', num2str(day), ', Block: ', num2str(block), ' - No successful Cb trials'])
@@ -1310,8 +1291,6 @@ if enabled(14)
                 Cb_ave_fail_snapshots = mean(mean(Cb_fail_snapshots, 1), 3);
                 Cb_succ_snapshots_filt = mean(mean(Cb_succ_filt, 1), 3);
                 Cb_fail_snapshots_filt = mean(mean(Cb_fail_filt, 1), 3);
-                [Cb_succ_snapshots_filt, ~] = normalize(Cb_succ_snapshots_filt);
-                [Cb_fail_snapshots_filt, ~] = normalize(Cb_fail_snapshots_filt);
                 plot(x_axis,Cb_succ_snapshots_filt,x_axis,Cb_fail_snapshots_filt)
                 legend('Successes','Failures')
                 axis([-750 750 -3 3])
@@ -1326,6 +1305,7 @@ if enabled(14)
 end
 
 %% Individual Channel ERSP Heatmaps (15)
+% Create a ERSP heatmap for each channel individually.
 
 if enabled(15)
     disp('Block 15...')
@@ -1333,12 +1313,13 @@ if enabled(15)
         M1_day_ersp_data = [];
         Cb_day_ersp_data = [];
         for block=1:param.blocks
-            
+            %Combine block data into day data
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/ERSP_reach', '.mat']);
             M1_day_ersp_data = cat(4, M1_day_ersp_data, M1_ersp_data);
             Cb_day_ersp_data = cat(4, Cb_day_ersp_data, Cb_ersp_data);
             
         end
+        %Create plot with every channel's heatmap
         if param.M1_chans == 0
             M1_channels_heatmap = create_channel_power_heatmap(M1_day_ersp_data, M1_times, M1_freqs, 'empty', param.M1_bad_chans);
         else
@@ -1371,6 +1352,7 @@ if enabled(15)
 end
 
 %% Create Specific Channel ERSP Heatmaps (16)
+% Create an ERSP heatmap for a chosen individual channel(s).
 
 if enabled(16)
     disp('Block 16...')
@@ -1379,18 +1361,24 @@ if enabled(16)
     for day=1:param.days
         M1_day_ersp_data = [];
         Cb_day_ersp_data = [];
+        
+        %Combine block data into day data
         for block=1:param.blocks
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/ERSP_reach', '.mat']);
             
             M1_day_ersp_data = cat(4, M1_day_ersp_data, M1_ersp_data);
             Cb_day_ersp_data = cat(4, Cb_day_ersp_data, Cb_ersp_data);
         end
+        
+        %Create heatmaps of select M1 channels
         for M1_channel_num = find(ismembaer(param.M1_good_chans,M1_channels_of_interest))
             %M1_channel_heatmap = create_power_heatmap((M1_day_ersp_data(M1_channel_num,:,:,:) .* conj(M1_day_ersp_data(M1_channel_num,:,:,:))), times, freqs);
             M1_channel_heatmap = create_power_heatmap(abs(M1_day_ersp_data(M1_channel_num,:,:,:)), M1_times, M1_freqs);
             saveas(M1_channel_heatmap, [rootpath,animal,'/Day',num2str(day),'/M1_channel_', num2str(param.M1_good_chans(M1_channel_num)), '_full_day_power_heatmaps', '.fig']);
             close all
         end
+        
+        %Create heatmaps of select Cb channels
         for Cb_channel_num = find(ismember(param.Cb_good_chans,Cb_channels_of_interest))
             %Cb_channel_heatmap = create_power_heatmap((Cb_day_ersp_data(Cb_channel_num,:,:,:) .* conj(Cb_day_ersp_data(Cb_channel_num,:,:,:))), times, freqs);
             Cb_channel_heatmap = create_power_heatmap(abs(Cb_day_ersp_data(Cb_channel_num,:,:,:)), Cb_times, Cb_freqs);
@@ -1405,6 +1393,7 @@ if enabled(16)
 end
 
 %% Plot Success Rate (17)
+% Plot success rate as in Lemke 2019 Fig.1b (green line)
 
 if enabled(17)
     disp('Block 17...')
@@ -1430,7 +1419,6 @@ if enabled(17)
         line([day_starts(i) day_starts(i)], [0 1], 'Color', 'yellow', 'LineStyle', '--')
     end
     
-
     shared_data.day_success_rate = day_succ_rate;
     save([rootpath,animal,'/Shared_Data.mat'], 'shared_data')
 
@@ -1440,16 +1428,20 @@ if enabled(17)
 end
 
 %% Create Success vs. Fail Heatmaps (18)
+% Create mean ERSP heatmaps using only success trials and only fail trials
 
 if enabled(18)
     disp('Block 18...')
+    %Parameters
     freq_range = [1.5 4];  %in hz
     time_range = [-250 750]; %in ms
+    %Preallocation
     M1_day_ch_succ_means = cell(1,param.days);
     M1_day_ch_fail_means = cell(1,param.days);
     Cb_day_ch_succ_means = cell(1,param.days);
     Cb_day_ch_fail_means = cell(1,param.days);
     for day=1:param.days
+        %Preallocation 
         day_M1_succ_ersp = [];
         day_M1_fail_ersp = [];
         day_Cb_succ_ersp = [];
@@ -1459,9 +1451,11 @@ if enabled(18)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Bad_trials.mat']);
             
+            %Split ERSP data in data from successful trials and failed trials
             [M1_succ_ersp, M1_fail_ersp] = success_fail_split(M1_ersp_data, data, M1_bad_trials, 4);
             [Cb_succ_ersp, Cb_fail_ersp] = success_fail_split(Cb_ersp_data, data, Cb_bad_trials, 4);
             
+            %Remove complex component and normalize
             real_data = abs(M1_succ_ersp);
             data_mean = mean(real_data(:,:,M1_times>-1500&M1_times<-500,:),3);
             data_std = std(real_data(:,:,M1_times>-1500&M1_times<-500,:),[],3);
@@ -1486,18 +1480,17 @@ if enabled(18)
             zs_data = (real_data-data_mean) ./ data_std;
             day_Cb_fail_ersp = cat(4, day_Cb_fail_ersp, zs_data(:,(Cb_freqs>=freq_range(1)) & (Cb_freqs<=freq_range(2)),(Cb_times>=time_range(1)) & (Cb_times<=time_range(2)),:));
             
+            %Create heatmaps for success/fail populations
             if isempty(M1_succ_ersp)
                 disp(['Day: ', num2str(day), ', Block: ', num2str(block), ' - No successful M1 trials'])
             elseif isempty(M1_fail_ersp)
                 disp(['Day: ', num2str(day), ', Block: ', num2str(block), ' - No failure M1 trials'])
             else
-                %M1_succ_heatmap = create_power_heatmap((M1_succ_ersp .* conj(M1_succ_ersp)), times, freqs);
-                M1_succ_heatmap = create_power_heatmap(abs(M1_succ_ersp), M1_times, M1_freqs);
+                M1_succ_heatmap = create_power_heatmap(abs(M1_succ_ersp), M1_times, M1_freqs); %M1_succ_heatmap = create_power_heatmap((M1_succ_ersp .* conj(M1_succ_ersp)), times, freqs);
                 saveas(M1_succ_heatmap, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/M1_succ_power_heatmap', '.fig']);
                 close all;
                 
-                %M1_fail_heatmap = create_power_heatmap((M1_fail_ersp .* conj(M1_fail_ersp)), times, freqs);
-                M1_fail_heatmap = create_power_heatmap(abs(M1_fail_ersp), M1_times, M1_freqs);
+                M1_fail_heatmap = create_power_heatmap(abs(M1_fail_ersp), M1_times, M1_freqs); %M1_fail_heatmap = create_power_heatmap((M1_fail_ersp .* conj(M1_fail_ersp)), times, freqs);
                 saveas(M1_fail_heatmap, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/M1_fail_power_heatmap', '.fig']);
                 close all;
             end
@@ -1507,24 +1500,22 @@ if enabled(18)
             elseif isempty(Cb_fail_ersp)
                 disp(['Day: ', num2str(day), ', Block: ', num2str(block), ' - No failure Cb trials'])
             else
-                %Cb_succ_heatmap = create_power_heatmap((Cb_succ_ersp .* conj(Cb_succ_ersp)), times, freqs);
-                Cb_succ_heatmap = create_power_heatmap(abs(Cb_succ_ersp), Cb_times, Cb_freqs);
+                Cb_succ_heatmap = create_power_heatmap(abs(Cb_succ_ersp), Cb_times, Cb_freqs); %Cb_succ_heatmap = create_power_heatmap((Cb_succ_ersp .* conj(Cb_succ_ersp)), times, freqs);
                 saveas(Cb_succ_heatmap, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Cb_succ_power_heatmap', '.fig']);
                 close all;
                 
-                %Cb_fail_heatmap = create_power_heatmap((Cb_fail_ersp .* conj(Cb_fail_ersp)), times, freqs);
-                Cb_fail_heatmap = create_power_heatmap(abs(Cb_fail_ersp), Cb_times, Cb_freqs);
+                Cb_fail_heatmap = create_power_heatmap(abs(Cb_fail_ersp), Cb_times, Cb_freqs); %Cb_fail_heatmap = create_power_heatmap((Cb_fail_ersp .* conj(Cb_fail_ersp)), times, freqs);
                 saveas(Cb_fail_heatmap, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Cb_fail_power_heatmap', '.fig']);
                 close all;
             end
-            
-            
         end
+        %Calculate success/fail means
         M1_day_ch_succ_means{day} = squeeze(mean(mean(day_M1_succ_ersp,3),2));
         M1_day_ch_fail_means{day} = squeeze(mean(mean(day_M1_fail_ersp,3),2));
         Cb_day_ch_succ_means{day} = squeeze(mean(mean(day_Cb_succ_ersp,3),2));
         Cb_day_ch_fail_means{day} = squeeze(mean(mean(day_Cb_fail_ersp,3),2));
     end
+    %Save success/fail means
     load([rootpath,animal,'/Shared_Data.mat'])
     shared_data.M1_day_succ_spectral_power = M1_day_ch_succ_means;
     shared_data.M1_day_fail_spectral_power = M1_day_ch_fail_means;
@@ -1535,8 +1526,8 @@ if enabled(18)
     clearvars -except code_rootpath rootpath origin_rootpath animal param enabled;
 end
 
-%% Calculate Inter-event Intervals (19)
-
+%% Calculate Inter-event Intervals (IEI) (19)
+% Calculates and saves the length of time between reach onset and touch/retract for each trail
 if enabled(19)
     disp('Block 19...')
     for day=1:param.days
@@ -1553,6 +1544,7 @@ if enabled(19)
 end
 
 %% Create IEI Time Course (20)
+% Plot touch and retract durration time courses and rastors as in Lemke 2019 Fig.1b (blue and grey)
 
 if enabled(20)
     disp('Block 20...')
@@ -1563,16 +1555,24 @@ if enabled(20)
     for day=1:param.days
         day_starts(day) = length(all_reach_touch_interval)+1;
         for block=1:param.blocks
+            %Combine all duration data
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals.mat']);
             all_reach_touch_interval = [all_reach_touch_interval; reach_touch_interval(reach_touch_interval ~= -1)]; %#ok<AGROW>
             all_reach_retract_interval = [all_reach_retract_interval; reach_retract_interval(reach_retract_interval ~= -1)]; %#ok<AGROW>
         end
     end
+    %Calculate mean for the lines
     averaged_reach_touch_interval = smooth(all_reach_touch_interval,30);
     averaged_reach_retract_interval = smooth(all_reach_retract_interval,30);
-    plot(1:length(averaged_reach_touch_interval), averaged_reach_touch_interval, 'b-', 1:length(averaged_reach_retract_interval), averaged_reach_retract_interval, 'k-', 1:length(all_reach_retract_interval), all_reach_retract_interval, 'k.', 1:length(all_reach_touch_interval), all_reach_touch_interval, 'b.', 'LineWidth', 2, 'MarkerSize', 3)
+    %Plot both lines and both scatterplots
+    plot(1:length(averaged_reach_touch_interval), averaged_reach_touch_interval, 'b-', ...
+         1:length(averaged_reach_retract_interval), averaged_reach_retract_interval, 'k-', ...
+         1:length(all_reach_retract_interval), all_reach_retract_interval, 'k.', ...
+         1:length(all_reach_touch_interval), all_reach_touch_interval, 'b.', ...
+         'LineWidth', 2, 'MarkerSize', 3)
     %axis([1 length(averaged_reach_touch_interval) 0 2.5])
     legend('Ave touch','Ave retract','All retract','All touch')
+    %Plot the dividing lines that indicate day bounds
     for i = 1:param.days
         line([day_starts(i) day_starts(i)], [0 2.5], 'Color', 'yellow', 'LineStyle', '--')
     end
@@ -1583,6 +1583,7 @@ if enabled(20)
 end
 
 %% Create Small Event Centered Snapshots (21)
+% Create 4 second snapshots centered on reach onset, touch, and retract. Data analysis behind Lemke 2019 Fig 2d (top)
 
 if enabled(21)
     disp('Block 21...')
@@ -1603,6 +1604,7 @@ if enabled(21)
 end
 
 %% Calculate Event-centered ERPs and ITCs (22)
+%Calcuate ERSPs and ITCs centered on reach, touch, and retract using event-centered snapshots. Data analysis behind Lemke 2019 Fig 2d (bot)
 
 if enabled(22)
     disp('Block 22...')
@@ -1616,6 +1618,7 @@ if enabled(22)
         for block=1:param.blocks
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Event_centered_snapshots', '.mat']);
             
+            %Combine block data into day data
             M1_day_reach_snapshots = cat(3, M1_day_reach_snapshots, M1_reach_snapshots);
             M1_day_touch_snapshots = cat(3, M1_day_touch_snapshots, M1_touch_snapshots);
             M1_day_retract_snapshots = cat(3, M1_day_retract_snapshots, M1_retract_snapshots);
@@ -1623,25 +1626,27 @@ if enabled(22)
             Cb_day_touch_snapshots = cat(3, Cb_day_touch_snapshots, Cb_touch_snapshots);
             Cb_day_retract_snapshots = cat(3, Cb_day_retract_snapshots, Cb_retract_snapshots);
             
+            %Calculate block ERSP data
             [M1_reach_ersp_data, M1_reach_itc_data, times, freqs] = small_ersp_calc(M1_reach_snapshots, param.M1_Fs); %#ok<ASGLU>
             [M1_touch_ersp_data, M1_touch_itc_data, ~, ~] = small_ersp_calc(M1_touch_snapshots, param.M1_Fs);
             [M1_retract_ersp_data, M1_retract_itc_data, ~, ~] = small_ersp_calc(M1_retract_snapshots, param.M1_Fs);
             [Cb_reach_ersp_data, Cb_reach_itc_data, ~, ~] = small_ersp_calc(Cb_reach_snapshots, param.Cb_Fs);
             [Cb_touch_ersp_data, Cb_touch_itc_data, ~, ~] = small_ersp_calc(Cb_touch_snapshots, param.Cb_Fs);
             [Cb_retract_ersp_data, Cb_retract_itc_data, ~, ~] = small_ersp_calc(Cb_retract_snapshots, param.Cb_Fs);
-            
+            %Save
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Event_centered_ERSP_reach', '.mat'],'M1_reach_ersp_data', 'M1_touch_ersp_data', 'M1_retract_ersp_data','Cb_reach_ersp_data', 'Cb_touch_ersp_data', 'Cb_retract_ersp_data','times','freqs','-v7.3')
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Event_centered_ITC_reach', '.mat'],'M1_reach_itc_data', 'M1_touch_itc_data', 'M1_retract_itc_data','Cb_reach_itc_data', 'Cb_touch_itc_data', 'Cb_retract_itc_data','times','freqs','-v7.3')
             
             
         end
+        %Calculate day ERSP data
         [M1_day_reach_ersp_data, M1_day_reach_itc_data, times, freqs] = small_ersp_calc(M1_day_reach_snapshots, param.M1_Fs);
         [M1_day_touch_ersp_data, M1_day_touch_itc_data, ~, ~] = small_ersp_calc(M1_day_touch_snapshots, param.M1_Fs);
         [M1_day_retract_ersp_data, M1_day_retract_itc_data, ~, ~] = small_ersp_calc(M1_day_retract_snapshots, param.M1_Fs);
         [Cb_day_reach_ersp_data, Cb_day_reach_itc_data, ~, ~] = small_ersp_calc(Cb_day_reach_snapshots, param.Cb_Fs);
         [Cb_day_touch_ersp_data, Cb_day_touch_itc_data, ~, ~] = small_ersp_calc(Cb_day_touch_snapshots, param.Cb_Fs);
         [Cb_day_retract_ersp_data, Cb_day_retract_itc_data, ~, ~] = small_ersp_calc(Cb_day_retract_snapshots, param.Cb_Fs);
-        
+        %Save
         save([rootpath,animal,'/Day',num2str(day),'/Event_centered_ERSP_reach', '.mat'],'M1_day_reach_ersp_data', 'M1_day_touch_ersp_data', 'M1_day_retract_ersp_data','Cb_day_reach_ersp_data', 'Cb_day_touch_ersp_data', 'Cb_day_retract_ersp_data','times','freqs','-v7.3')
         save([rootpath,animal,'/Day',num2str(day),'/Event_centered_ITC_reach', '.mat'],'M1_day_reach_itc_data', 'M1_day_touch_itc_data', 'M1_day_retract_itc_data','Cb_day_reach_itc_data', 'Cb_day_touch_itc_data', 'Cb_day_retract_itc_data','times','freqs','-v7.3')
     end
@@ -1649,16 +1654,18 @@ if enabled(22)
 end
 
 %% Plot Average ITC across Days (23)
+% Collect and plot data for multi-animal graphs. Lemke 2019 Fig 2d (bot)
 
 if enabled(23)
     disp('Block 23...')
-    
+    %Parameters
     reach_range = [-500, 500]; %[0, 1000]; %in ms
     touch_range = [-500, 500]; %[-250, 750];
     retract_range = [-500, 500]; %[-500, 500];
     delta_range = [0.1 3]; %hz
     theta_range = [3 6]; %hz
     
+    %Preallocation
     M1_reach_ITC_ave_delta = zeros(param.days,length(param.M1_good_chans));
     M1_touch_ITC_ave_delta = zeros(param.days,length(param.M1_good_chans));
     M1_retract_ITC_ave_delta = zeros(param.days,length(param.M1_good_chans));
@@ -1672,9 +1679,11 @@ if enabled(23)
     Cb_reach_ITC_ave_theta = zeros(param.days,length(param.Cb_good_chans));
     Cb_touch_ITC_ave_theta = zeros(param.days,length(param.Cb_good_chans));
     Cb_retract_ITC_ave_theta = zeros(param.days,length(param.Cb_good_chans));
+    
     for day=1:param.days
         load([rootpath,animal,'/Day',num2str(day),'/Event_centered_ITC_reach', '.mat']);
-
+        
+        %Calculate day means
         M1_reach_ITC_ave_delta(day,:) = mean(mean(abs(M1_day_reach_itc_data(:,logical((freqs<delta_range(2)).*(freqs>delta_range(1))),logical((times<reach_range(2)).*(times>reach_range(1))))),3),2);
         M1_touch_ITC_ave_delta(day,:) = mean(mean(abs(M1_day_touch_itc_data(:,logical((freqs<delta_range(2)).*(freqs>delta_range(1))),logical((times<touch_range(2)).*(times>touch_range(1))))),3),2);
         M1_retract_ITC_ave_delta(day,:) = mean(mean(abs(M1_day_retract_itc_data(:,logical((freqs<delta_range(2)).*(freqs>delta_range(1))),logical((times<touch_range(2)).*(times>retract_range(1))))),3),2);
@@ -1695,6 +1704,7 @@ if enabled(23)
     
     load([rootpath,animal,'/Shared_Data.mat']);
     
+    %Plot day-by-day delta
     shared_data.M1_reach_delta_ITC = M1_reach_ITC_ave_delta;
     bar(mean(M1_reach_ITC_ave_delta,2));
     axis([0.5 5.5 0 .6])
@@ -1733,7 +1743,7 @@ if enabled(23)
     
     save([rootpath,animal,'/Shared_Data.mat'], 'shared_data')
     
-    %Early-Late graphs
+    %Plot Early-Late delta
     day_means = M1_reach_ITC_ave_delta;
     el_means = [mean([day_means(1,:); day_means(2,:)],1); mean([day_means(4,:); day_means(5,:)],1)];
     day_stdvs = std(day_means,0,2);
@@ -1813,7 +1823,7 @@ if enabled(23)
     saveas(gcf,[rootpath,animal,'/EL_delta_ITC_Retract_Cb', '.fig'])
     close all
     
-    
+    %Plot day-by-day theta
     bar(mean(M1_reach_ITC_ave_theta,2));
     axis([0.5 5.5 0 .6])
     saveas(gcf,[rootpath,animal,'/theta_ITC_Reach_M1', '.fig'])
@@ -1848,6 +1858,10 @@ if enabled(23)
 end
 
 %% Event-Tagged LFP plots (24)
+% Create LFP plots of success-only LFPs to compare M1 and CB.
+% Also creates plots of a single trial with reach, touch and retract marked (Lemke 2019 Fig 2a)
+% Note: Saving the graphs of a bunch of different trials while searching for one that looks good creates clutter.
+%       Later on, I implement things like this without the save and instead use breakpoints to examine and extract the figures.  
 
 if enabled(24)
     disp('Block 24...')
@@ -1871,6 +1885,7 @@ if enabled(24)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Bad_trials.mat']);
             
+            %Find the trials that are free of noise in both M1 and Cb
             [M1_snapshots, Cb_snapshots] = get_common_good_data(M1_snapshots_n, Cb_snapshots_n, M1_bad_trials, Cb_bad_trials, 3);
             [M1_filt, Cb_filt] = get_common_good_data(M1_1_4_snapshots_n, Cb_1_4_snapshots_n, M1_bad_trials, Cb_bad_trials, 3);
             common_bad_trials = unique([M1_bad_trials, Cb_bad_trials]);
@@ -1878,6 +1893,7 @@ if enabled(24)
             common_good_trials(common_bad_trials) = [];
             main_trial_num = 1:(size(M1_snapshots,3));
             
+            %Split LFP data into successes and failures 
             [M1_succ_snapshots, M1_fail_snapshots] = success_fail_split(M1_snapshots, data, common_bad_trials, 3);
             [Cb_succ_snapshots, Cb_fail_snapshots] = success_fail_split(Cb_snapshots, data, common_bad_trials, 3);
             [M1_succ_filt, M1_fail_filt] = success_fail_split(M1_filt, data, common_bad_trials, 3);
@@ -1886,6 +1902,7 @@ if enabled(24)
             M1_time_course = round(-4*param.M1_Fs):round(4*param.M1_Fs);
             Cb_time_course = round(-4*param.Cb_Fs):round(4*param.Cb_Fs);
             
+            %Get durations
             M1_reach_touch_interval = reach_touch_interval;
             M1_reach_retract_interval = reach_retract_interval;
             Cb_reach_touch_interval = reach_touch_interval;
@@ -1896,7 +1913,7 @@ if enabled(24)
             Cb_reach_touch_interval(common_bad_trials) = [];
             Cb_reach_retract_interval(common_bad_trials) = [];
             
-            
+            %Get success-only durations
             [M1_reach_touch_interval_succ, ~] = success_fail_split(M1_reach_touch_interval, data, common_bad_trials, 1);
             [M1_reach_retract_interval_succ, ~] = success_fail_split(M1_reach_retract_interval, data, common_bad_trials, 1);
             [Cb_reach_touch_interval_succ, ~] = success_fail_split(Cb_reach_touch_interval, data, common_bad_trials, 1);
@@ -1908,6 +1925,7 @@ if enabled(24)
             if isempty(M1_succ_snapshots)
                 disp(['Day: ', num2str(day), ', Block: ', num2str(block), ' - No successful M1 trials'])
             else
+                % Old figure creation. New version puts all plots in the same file using subploting to reduce clutter but the old was kept around just in case.
 %                 figure
 %                 for i = 1:size(M1_succ_snapshots,3)
 %                     subplot(5,ceil(size(M1_succ_snapshots,3)/5),i);
@@ -1937,7 +1955,8 @@ if enabled(24)
 %                 end
 %                 saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/',block_names{block},'/Cb_All_success_Trials_LFP', '.fig']);
 %                 close all;
-                
+
+                % New figure creation using subplotting
                 for i1 = 0:20:size(M1_succ_snapshots,3)-1
                     figure
                     for i2 = 1:min(20,size(M1_succ_snapshots,3)-i1)
@@ -1967,6 +1986,7 @@ if enabled(24)
                     close all;
                 end
                 
+                %M1 Single-trial plots
                 for true_trial_num = M1_trials_of_interest{day,block}
                     trial = find(common_good_trials == true_trial_num);
                     succ_trial = find(succ_main_trial_num == trial);
@@ -1985,6 +2005,7 @@ if enabled(24)
                     close all;
                 end
                 
+                %Cb Single-trial plots
                 for true_trial_num = Cb_trials_of_interest{day,block}
                     trial = find(common_good_trials == true_trial_num);
                     succ_trial = find(succ_main_trial_num == trial);
@@ -2010,11 +2031,13 @@ if enabled(24)
 end
 
 %% Calculate LFP/LFP Coherence Data (25)
+% Data analysis behind Lemke 2019 Fig 2c
 
 if enabled(25)
     disp('Block 25...')
     addpath(genpath('Z:/Matlab for analysis/chronux_2_10/chronux/spectral_analysis'))
     addpath(genpath('Z:/Matlab for analysis/eeglab/functions'))
+    %General Parameters
     M1_channels_of_interest = param.M1_increasing_power_channels;
     Cb_channels_of_interest = param.Cb_increasing_power_channels;
     if isempty(M1_channels_of_interest)
@@ -2027,7 +2050,8 @@ if enabled(25)
     else
         Cb_channels_of_interest = intersect(Cb_channels_of_interest, param.Cb_good_chans);
     end
-        
+    
+    %cohgram parameters
     coh_params.Fs = param.M1_Fs;
     coh_params.fpass = [0 20];
     coh_params.tapers = [3 5];
@@ -2048,7 +2072,9 @@ if enabled(25)
             
             for M1_chan = find(ismember(param.M1_good_chans,M1_channels_of_interest))
                 for Cb_chan = find(ismember(param.Cb_good_chans,Cb_channels_of_interest))
-%                     %Version 1 (chronux)
+                    %Two version of the coherence calculation, one using cohgramc and one using newcrossf. The newcrossf version is what we've currently settled on
+                    
+                    %Version 1 (chronux)
 %                     [coh,phi_cmr,~,~,~,coh_times,coh_freqs,~,~,~] = cohgramc(squeeze(M1_snapshots(M1_chan,:,:)), squeeze(Cb_snapshots(Cb_chan,:,:)), [1 .025], coh_params);
 %                     coh_times = (coh_times - 4) * coh_params.Fs;
 %                     coh = coh';
@@ -2075,6 +2101,7 @@ if enabled(25)
 end
 
 %% Create LFP/LFP Coherence Heatmaps (26)
+% Lemke 2019 Fig 2c
 
 if enabled(26)
     disp('Block 26...')
@@ -2103,6 +2130,7 @@ if enabled(26)
             
                     load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/LFP-LFP_Spectral_Coherence_alt/M1ch',num2str(param.M1_good_chans(M1_chan)),'_Cbch',num2str(param.Cb_good_chans(Cb_chan)),'_data', '.mat']);
                     
+                    %Plot
                     figure;
                     %subplot(1,2,1)
                     pcolor(coh_times,coh_freqs,squeeze(mean(coh, 3)))
@@ -2160,6 +2188,7 @@ if enabled(27)
     last_day_M1 = [];
     last_day_Cb = [];
     for block=1:param.blocks
+        %Collect day data for days 1 and 5
         load([rootpath,animal,'/Day',num2str(1),'/',param.block_names{block},'/ERSP_reach', '.mat']);
         first_day_M1 = cat(4,first_day_M1,abs(M1_ersp_data));
         first_day_Cb = cat(4,first_day_Cb,abs(Cb_ersp_data));
@@ -2180,6 +2209,7 @@ if enabled(27)
                 continue
             end
             
+            %Collect data from each combination of M1 and Cb
             all_cohs = [];
             chan_idx = 0;
             M1_chan_idx = 0;
@@ -2195,6 +2225,7 @@ if enabled(27)
                 end
             end
             
+            %Plot
             figure;
             pcolor(coh_times,coh_freqs,squeeze(mean(all_cohs, 3)))
             shading interp
@@ -2229,6 +2260,7 @@ if enabled(27)
 end
 
 %% Pull out Specific Event Tagged LFP plot for M1 and Cb (28)
+% 2019 Fig 2d (top)
 
 if enabled(28)
     disp('Block 28...')
@@ -2241,6 +2273,7 @@ if enabled(28)
     M1_channel = find(true_M1_channel == param.M1_good_chans);
     Cb_channel = find(true_Cb_channel == param.Cb_good_chans);
     
+    %Extract desired subplots and copy into new figure
     uiopen([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/M1_All_channels_Trial_',num2str(trial),'_LFP', '.fig'],1);
     M1_fig = gcf;
     subplot(5, ceil(numel(M1_fig.Children)/5), M1_channel);
@@ -2262,7 +2295,7 @@ if enabled(28)
     clearvars -except code_rootpath rootpath origin_rootpath animal param enabled;
 end
 
-%% Extract Spike Timestamp Data (29) *If this breaks when running some legacy data examine the block after this one for solutions*
+%% Extract Spike Timestamp Data from Raw Recordings (29) *If this breaks when running some legacy data examine the block after this one for solutions*
 
 if enabled(29)
     disp('Block 29...')
@@ -2271,6 +2304,7 @@ if enabled(29)
     addpath(genpath([code_rootpath, 'RunSpykingCircusSorter-master']))
     addpath(genpath('Z:\Matlab for analysis\TDTMatlabSDK\TDTSDK\TDTbin2mat'))
 
+    %Parameters
     extract_waveforms = true;
     param.M1_mua_neurons = cell(5,1);
     param.Cb_mua_neurons = cell(5,1);
@@ -2306,321 +2340,443 @@ if enabled(29)
     end
     
     for day=1:param.days
-        %if strcmp(animal,'I060') || strcmp(animal,'I061') ||  strcmp(animal, 'I064')
-            
-        %else
-            param.M1_mua_neurons{day} = zeros(param.M1_chans,param.M1_neurons);
-            param.Cb_mua_neurons{day} = zeros(param.Cb_chans,param.Cb_neurons);
-            
-            param.M1_neuron_chans{day} = nan(param.M1_chans,param.M1_neurons);
-            param.Cb_neuron_chans{day} = nan(param.Cb_chans,param.Cb_neurons);
-            
-            load([origin_rootpath,animal,'/',param.durFiles(day,:),'.mat']);
-            
-            sb_idxs = cell(1,4);
-            sub_block_names = [];
-            prev_last_idx = 0;
-            if size(param.sleep_block_names,2) > 0
-                sb_idxs{1} = 1:size(param.sleep_block_names{day,1},1);
-                prev_last_idx = sb_idxs{1}(end);
-                sub_block_names = [sub_block_names ; param.sleep_block_names{day,1}]; %#ok<AGROW>
+        
+        param.M1_mua_neurons{day} = zeros(param.M1_chans,param.M1_neurons);
+        param.Cb_mua_neurons{day} = zeros(param.Cb_chans,param.Cb_neurons);
+        
+        param.M1_neuron_chans{day} = nan(param.M1_chans,param.M1_neurons);
+        param.Cb_neuron_chans{day} = nan(param.Cb_chans,param.Cb_neurons);
+        
+        load([origin_rootpath,animal,'/',param.durFiles(day,:),'.mat']);
+        
+        %Assemble Sub-block information (sub-blocks are the actual recording sessions. A block may be composed of multiple recording sessions if the recording was interupted during the block.)
+        sb_idxs = cell(1,4);
+        sub_block_names = [];
+        prev_last_idx = 0;
+        if size(param.sleep_block_names,2) > 0
+            sb_idxs{1} = 1:size(param.sleep_block_names{day,1},1);
+            prev_last_idx = sb_idxs{1}(end);
+            sub_block_names = [sub_block_names ; param.sleep_block_names{day,1}]; %#ok<AGROW>
+        else
+            sb_idxs{1} = nan(1,0);
+        end
+        if size(param.training_block_names,2) > 0
+            sb_idxs{2} = (1:size(param.training_block_names{day,1},1)) + prev_last_idx;
+            prev_last_idx = sb_idxs{2}(end);
+            sub_block_names = [sub_block_names ; param.training_block_names{day,1}]; %#ok<AGROW>
+        else
+            sb_idxs{2} = nan(1,0);
+        end
+        if size(param.sleep_block_names,2) > 1
+            sb_idxs{3} = (1:size(param.sleep_block_names{day,2},1)) + prev_last_idx;
+            prev_last_idx = sb_idxs{3}(end);
+            sub_block_names = [sub_block_names ; param.sleep_block_names{day,2}]; %#ok<AGROW>
+        else
+            sb_idxs{3} = nan(1,0);
+        end
+        if size(param.training_block_names,2) > 1
+            sb_idxs{4} = (1:size(param.training_block_names{day,2},1)) + prev_last_idx;
+            prev_last_idx = sb_idxs{4}(end);
+            sub_block_names = [sub_block_names ; param.training_block_names{day,2}]; %#ok<AGROW>
+        else
+            sb_idxs{4} = nan(1,0);
+        end
+        
+        if size(durMAT,2) ~= length([sb_idxs{:}])
+            error('Sub-Block count mismatch')
+        end
+        
+        for block = 1:4
+            M1_spike_timestamps = cell(param.M1_chans,param.M1_neurons);
+            M1_spike_waves = cell(param.M1_chans,param.M1_neurons);
+            Cb_spike_timestamps = cell(param.Cb_chans,param.Cb_neurons);
+            Cb_spike_waves = cell(param.Cb_chans,param.Cb_neurons);
+            if mod(block,2) %sleep blocks
+                %These arrays get so large than only one can be open at a time which requires a lot of saving, clearing, and loading
+                save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
             else
-                sb_idxs{1} = nan(1,0);
+                save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
             end
-            if size(param.training_block_names,2) > 0
-                sb_idxs{2} = (1:size(param.training_block_names{day,1},1)) + prev_last_idx;
-                prev_last_idx = sb_idxs{2}(end);
-                sub_block_names = [sub_block_names ; param.training_block_names{day,1}]; %#ok<AGROW>
-            else
-                sb_idxs{2} = nan(1,0);
-            end
-            if size(param.sleep_block_names,2) > 1
-                sb_idxs{3} = (1:size(param.sleep_block_names{day,2},1)) + prev_last_idx;
-                prev_last_idx = sb_idxs{3}(end);
-                sub_block_names = [sub_block_names ; param.sleep_block_names{day,2}]; %#ok<AGROW>
-            else
-                sb_idxs{3} = nan(1,0);
-            end
-            if size(param.training_block_names,2) > 1
-                sb_idxs{4} = (1:size(param.training_block_names{day,2},1)) + prev_last_idx;
-                prev_last_idx = sb_idxs{4}(end);
-                sub_block_names = [sub_block_names ; param.training_block_names{day,2}]; %#ok<AGROW>
-            else
-                sb_idxs{4} = nan(1,0);
-            end
-            
-            if size(durMAT,2) ~= length([sb_idxs{:}])
-                error('Sub-Block count mismatch')
-            end
-            
-            for block = 1:4
-                M1_spike_timestamps = cell(param.M1_chans,param.M1_neurons);
-                M1_spike_waves = cell(param.M1_chans,param.M1_neurons);
-                Cb_spike_timestamps = cell(param.Cb_chans,param.Cb_neurons);
-                Cb_spike_waves = cell(param.Cb_chans,param.Cb_neurons);
-                if mod(block,2) %sleep blocks
-                    save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
-                    save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
-                else
-                    save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
-                    save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
-                end
-            end
-            
-            %M1 spike times
-            if param.M1_chans == 0
-                block_spikes = cell(0,3);
-            else
-                block_spikes = cell((param.M1_chans/param.M1_shant_site_num),3);
-            end
-            chan_vect = 0:((param.M1_chans/param.M1_shant_site_num)-1);
-            if isnan(chan_vect)
-                chan_vect = [];
-            end
-            for chan = chan_vect
+        end
+        
+        %M1 spike times
+        if param.M1_chans == 0
+            block_spikes = cell(0,3);
+        else
+            block_spikes = cell((param.M1_chans/param.M1_shant_site_num),3);
+        end
+        chan_vect = 0:((param.M1_chans/param.M1_shant_site_num)-1);
+        if isnan(chan_vect)
+            chan_vect = [];
+        end
+        for chan = chan_vect
+            try
                 spike_times = double(readNPY([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\M1\',M1_shant_name,'_', num2str(chan), '\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_0\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_0.GUI\spike_times.npy']));
                 spike_clusters = readNPY([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\M1\',M1_shant_name,'_', num2str(chan), '\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_0\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_0.GUI\spike_clusters.npy']);
-                cluster_info = tdfread([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\M1\',M1_shant_name,'_', num2str(chan), '\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_0\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_0.GUI\cluster_info.tsv']); 
+                cluster_info = tdfread([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\M1\',M1_shant_name,'_', num2str(chan), '\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_0\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_0.GUI\cluster_info.tsv']);
                 dat_chan = (chan*param.M1_shant_site_num)+1;
-                
-                if param.M1_neurons < sum(strcmp(string(cluster_info.group),'good ') | strcmp(string(cluster_info.group),'mua  ') | strcmp(string(cluster_info.group),'good') | strcmp(string(cluster_info.group),'mua '))
-                    disp(['param.M1_neurons needs to be increased to ', num2str(length(unique(spike_clusters)))])
-                    param.M1_neurons = length(unique(spike_clusters));
-                    s_err = true;
-                elseif ~s_err
-                    %get waveforms
-                    for sub_block = 1:size(sub_block_names,1)
-                        fiD = fopen([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\M1\',M1_shant_name,'_', num2str(chan), '\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_', num2str(sub_block-1), '.dat'],'r');
-                        sb_chan_full_wave = fread(fiD,'float32');
-                        sb_chan_full_wave = reshape(sb_chan_full_wave,param.M1_shant_site_num,length(sb_chan_full_wave)/param.M1_shant_site_num);
-                        fclose(fiD);
-                        
-                        durMAT(3,sub_block) = length(sb_chan_full_wave)/param.M1_spike_wave_Fs;
-                        
-                        %Sort spiketimes into sub-blocks
-                        sb_spike_times = spike_times(spike_times <= size(sb_chan_full_wave,2));
-                        sb_spike_clusters = spike_clusters(1:length(sb_spike_times));
-                        spike_clusters(1:length(sb_spike_times)) = [];
-                        spike_times(1:length(sb_spike_times)) = [];
-                        spike_times = spike_times - size(sb_chan_full_wave,2);
-                        
-                        sb_waves = nan(30, length(sb_spike_times), param.M1_shant_site_num);
-                        for i = 1:length(sb_spike_times)
-                            t_stamp = sb_spike_times(i);
-                            if (t_stamp + 22) <= size(sb_chan_full_wave,2) && (t_stamp - 7) > 0
-                                for j = 1:param.M1_shant_site_num
-                                    sb_waves(:,i,j) = sb_chan_full_wave(j,t_stamp - 7:t_stamp + 22);
-                                end
-                            end
-                        end
-                        clear sb_chan_full_wave
-                        
-                        %Truncate
-                        sb_spike_times(sb_spike_times > (durMAT(5,sub_block)*param.M1_spike_wave_Fs)) = [];
-                        sb_spike_clusters = sb_spike_clusters(1:length(sb_spike_times));
-                        sb_waves = sb_waves(:,1:length(sb_spike_times),:);
-                        
-                        %Concatinate into blocks
-                        for block = 1:4
-                            if ismember(sub_block, sb_idxs{block}) 
-                                block_spikes{chan+1,1} = [block_spikes{chan+1,1}; (sb_spike_times + (sum(durMAT(5,sb_idxs{block}(sb_idxs{block}<sub_block)))*param.M1_spike_wave_Fs))];
-                                block_spikes{chan+1,2} = [block_spikes{chan+1,2}; sb_spike_clusters];
-                                block_spikes{chan+1,3} = [block_spikes{chan+1,3}, sb_waves];
-                                
-                                if sub_block == sb_idxs{block}(end)
-                                    if mod(block,2) %sleep blocks
-                                        load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat']);
-                                        load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat']);
-                                    else %training blocks
-                                        load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat']);
-                                        load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat']);
-                                    end
-                                    
-                                    cell_idx = 0;
-                                    for neuron = 1:length(cluster_info.cluster_id)
-                                        if (strcmp(cluster_info.group(neuron,:),'good ') || strcmp(cluster_info.group(neuron,:),'mua  ') || strcmp(cluster_info.group(neuron,:),'good') || strcmp(cluster_info.group(neuron,:),'mua '))
-                                            cell_idx = cell_idx+1;
-                                            if strcmp(cluster_info.group(neuron,:),'mua  ') || strcmp(cluster_info.group(neuron,:),'mua ')
-                                                param.M1_mua_neurons{day}(dat_chan,cell_idx) = true;
-                                            end
-                                            param.M1_neuron_chans{day}(dat_chan,cell_idx) = cluster_info.ch(neuron);
-                                            M1_spike_timestamps{dat_chan,cell_idx} = block_spikes{chan+1,1}(block_spikes{chan+1,2} == cluster_info.cluster_id(neuron))';
-                                            
-                                            for sub_chan = 0:(param.M1_shant_site_num-1)
-                                                M1_spike_waves{dat_chan + sub_chan,cell_idx} = block_spikes{chan+1,3}(:, block_spikes{chan+1,2} == cluster_info.cluster_id(neuron),sub_chan+1);
-                                            end
-                                            M1_spike_timestamps{dat_chan,cell_idx} = M1_spike_timestamps{dat_chan,cell_idx}/param.M1_spike_wave_Fs;
-                                        end
-                                    end
-                                    
-                                    if mod(block,2) %sleep blocks
-                                        save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
-                                        save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
-                                    else
-                                        save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
-                                        save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
-                                    end
-                                    block_spikes = cell((param.M1_chans/param.M1_shant_site_num),3);
-                                end
-                            end
+                plex = false;
+            catch
+                [M1_spike_timestamps_day, M1_spike_waves_day, ~] = fn_readPlxFile([origin_rootpath,animal,'/PLX_Converted/SORTED_TDT_data_',param.sleep_block_names{day,1}(1,end-17:end),'_eNe1_1_mrg.plx']);
+                spike_timestamps_day = M1_spike_timestamps_day((chan*param.M1_shant_site_num)+1,:);
+                spike_waves_day = M1_spike_waves_day((chan*param.M1_shant_site_num)+1,:);
+                plex = true;
+            end
+            
+            if plex
+                durMAT(3,:) = durMAT(1,:);
+                for sub_block = 1:size(sub_block_names,1)
+                    for block = 1:4
+                        if ismember(sub_block, sb_idxs{block})
+                            break
                         end
                     end
+                    
+                    sb_spike_times = cell(1,size(spike_timestamps_day,2));
+                    sb_spike_waves = cell(1,size(spike_timestamps_day,2));
+                    if mod(block,2) %sleep blocks
+                        %These arrays get so large than only one can be open at a time which requires a lot of saving, clearing, and loading
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat']);
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat']);
+                    else %training blocks
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat']);
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat']);
+                    end
+                    
+                    for neuron = 1:size(spike_timestamps_day,2)
+                        if ~isempty(spike_timestamps_day{neuron})
+                            sb_spike_waves{neuron} = spike_waves_day{neuron}(:,spike_timestamps_day{neuron} <= durMAT(3,sub_block));
+                            sb_spike_times{neuron} = spike_timestamps_day{neuron}(spike_timestamps_day{neuron} <= durMAT(3,sub_block));
+                            
+                            sb_spike_waves{neuron}(:,sb_spike_times{neuron} > durMAT(5,sub_block)) = [];
+                            sb_spike_times{neuron}(sb_spike_times{neuron} > durMAT(5,sub_block)) = [];
+                            
+                            spike_timestamps_day{neuron} = spike_timestamps_day{neuron} - durMAT(5,sub_block);
+                            
+                            spike_waves_day{neuron}(:,spike_timestamps_day{neuron} < 0) = [];
+                            spike_timestamps_day{neuron}(spike_timestamps_day{neuron} < 0) = [];
+                            
+                            M1_spike_timestamps{(chan*param.M1_shant_site_num)+1,neuron} = [M1_spike_timestamps{(chan*param.M1_shant_site_num)+1,neuron} (sb_spike_times{neuron} + sum(durMAT(5,sb_idxs{block}(sb_idxs{block}<sub_block))))];
+                            M1_spike_waves{(chan*param.M1_shant_site_num)+1,neuron} = [M1_spike_waves{(chan*param.M1_shant_site_num)+1,neuron}, sb_spike_waves{neuron}];
+                        end
+                    end
+                    
+                    if mod(block,2) %sleep blocks
+                        %These arrays get so large than only one can be open at a time which requires a lot of saving, clearing, and loading
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
+                    else %training blocks
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
+                    end
                 end
-            end
-            clear block_spikes sb_waves sb_chan_full_wave
-            
-            %Cb spike times
-            if param.Cb_chans == 0
-                block_spikes = cell(0,3);
-            else
-                block_spikes = cell((param.Cb_chans/param.Cb_shant_site_num),2);
-            end
-            shant_vect = 0:((param.Cb_chans/param.Cb_shant_site_num)-1);
-            if isnan(shant_vect)
-                shant_vect = [];
-            end
-            for shant = shant_vect
-                spike_times = double(readNPY([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0.GUI\spike_times.npy']));
-                spike_clusters = readNPY([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0.GUI\spike_clusters.npy']);
-                cluster_info = tdfread([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0.GUI\cluster_info.tsv']); 
-                dat_shant = (shant*param.Cb_shant_site_num)+1;
                 
-                if param.Cb_neurons < sum(strcmp(string(cluster_info.group),'good ') | strcmp(string(cluster_info.group),'mua  ') | strcmp(string(cluster_info.group),'good') | strcmp(string(cluster_info.group),'mua '))
-                    disp(['param.Cb_neurons needs to be increased to ', num2str(length(unique(spike_clusters)))])
-                    param.Cb_neurons = length(unique(spike_clusters));
-                    s_err = true;
-                elseif ~s_err
-                    good_cluster_idxs = (strcmp(string(cluster_info.group),'good ') | strcmp(string(cluster_info.group),'mua  ') | strcmp(string(cluster_info.group),'good') | strcmp(string(cluster_info.group),'mua '));
-                    all_good_clusters = cluster_info.cluster_id(good_cluster_idxs);
+            elseif param.M1_neurons < sum(strcmp(string(cluster_info.group),'good ') | strcmp(string(cluster_info.group),'mua  ') | strcmp(string(cluster_info.group),'good') | strcmp(string(cluster_info.group),'mua '))
+                disp(['param.M1_neurons needs to be increased to ', num2str(length(unique(spike_clusters)))])
+                param.M1_neurons = length(unique(spike_clusters));
+                s_err = true;
+            elseif ~s_err
+                %get waveforms
+                for sub_block = 1:size(sub_block_names,1)
+                    fiD = fopen([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\M1\',M1_shant_name,'_', num2str(chan), '\SU_CONT_M1_',M1_shant_name_short,'_', num2str(chan), '_', num2str(sub_block-1), '.dat'],'r');
+                    sb_chan_full_wave = fread(fiD,'float32');
+                    sb_chan_full_wave = reshape(sb_chan_full_wave,param.M1_shant_site_num,length(sb_chan_full_wave)/param.M1_shant_site_num);
+                    fclose(fiD);
+                    
+                    durMAT(3,sub_block) = size(sb_chan_full_wave,2)/param.M1_spike_wave_Fs;
                     
                     %Sort spiketimes into sub-blocks
-                    sb_spike_times = cell(1,size(sub_block_names,1));
-                    sb_spike_clusters = cell(1,size(sub_block_names,1));
-                    for sub_block = 1:size(sub_block_names,1)
-                        chan_SEV = SEV2mat([origin_rootpath,animal,'\',param.Spike_path,'\',sub_block_names(sub_block,:)],'CHANNEL',1);
-                        chan_full_wave = chan_SEV.RSn1.data;
-                        clear chan_SEV
-                        
-                        if isempty(chan_full_wave)
-                            durMAT(4,sub_block) = durMAT(3,sub_block);
-                        else
-                            durMAT(4,sub_block) = length(chan_full_wave)/param.Cb_spike_wave_Fs;
-                        end
-                        
-                        sb_spike_times{sub_block} = spike_times(spike_times <= size(chan_full_wave,2));
-                        sb_spike_clusters{sub_block} = spike_clusters(1:length(sb_spike_times{sub_block}));
-                        spike_clusters(1:length(sb_spike_times{sub_block})) = [];
-                        spike_times(1:length(sb_spike_times{sub_block})) = [];
-                        spike_times = spike_times - size(chan_full_wave,2);
-                        clear chan_full_wave
-                        
-                        %Truncate
-                        sb_spike_times{sub_block}(sb_spike_times{sub_block} > (durMAT(5,sub_block)*param.Cb_spike_wave_Fs)) = [];
-                        sb_spike_clusters{sub_block} = sb_spike_clusters{sub_block}(1:length(sb_spike_times{sub_block}));
-                        
-                        
-                    end
+                    sb_spike_times = spike_times(spike_times <= size(sb_chan_full_wave,2));
+                    sb_spike_clusters = spike_clusters(1:length(sb_spike_times));
+                    spike_clusters(1:length(sb_spike_times)) = [];
+                    spike_times(1:length(sb_spike_times)) = [];
+                    spike_times = spike_times - size(sb_chan_full_wave,2);
                     
-                    for sub_block = 1:size(sub_block_names,1)
-                        
-                        if extract_waveforms
-                            clear sb_full_wave
-                            fiD = fopen([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_', num2str(sub_block-1), '.dat'],'r');
-                            sb_full_wave = fread(fiD,'float32');
-                            sb_full_wave = reshape(sb_full_wave,param.Cb_shant_site_num,length(sb_full_wave)/param.Cb_shant_site_num);
-                            fclose(fiD);
-                        end
-                        
-                        %Convert to Seconds and zero to block start
-                        for check_block = 1:4
-                            sb_ordinal = find(sub_block == sb_idxs{check_block});
-                            if ~isempty(sb_ordinal)
-                                block = check_block;
-                                sb_offset = 0;
-                                for prev_sb = 1:(sb_ordinal-1)
-                                    sb_offset = sb_offset + durMAT(4,sub_block-prev_sb);
-                                end
-                                sb_spike_times{sub_block} = sb_spike_times{sub_block}/param.Cb_spike_wave_Fs;
-                                sb_spike_times{sub_block} = sb_spike_times{sub_block}+sb_offset;
+                    sb_waves = nan(30, length(sb_spike_times), param.M1_shant_site_num);
+                    for i = 1:length(sb_spike_times)
+                        t_stamp = sb_spike_times(i);
+                        if (t_stamp + 22) <= size(sb_chan_full_wave,2) && (t_stamp - 7) > 0
+                            for j = 1:param.M1_shant_site_num
+                                sb_waves(:,i,j) = sb_chan_full_wave(j,t_stamp - 7:t_stamp + 22);
                             end
                         end
-                        
-                        if mod(block,2) %sleep blocks
-                            load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat']);
-                            load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat']);
-                        else %training blocks
-                            load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat']);
-                            load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat']);
-                        end
-                        
-                        for channel = 0:(param.Cb_shant_site_num-1)
-                            chan_clusters = cluster_info.ch == channel & good_cluster_idxs;
-                            if sum(chan_clusters)
+                    end
+                    clear sb_chan_full_wave
+                    
+                    %Truncate
+                    sb_spike_times(sb_spike_times > (durMAT(5,sub_block)*param.M1_spike_wave_Fs)) = [];
+                    sb_spike_clusters = sb_spike_clusters(1:length(sb_spike_times));
+                    sb_waves = sb_waves(:,1:length(sb_spike_times),:);
+                    
+                    %Concatinate into blocks
+                    for block = 1:4
+                        if ismember(sub_block, sb_idxs{block})
+                            block_spikes{chan+1,1} = [block_spikes{chan+1,1}; (sb_spike_times + (sum(durMAT(5,sb_idxs{block}(sb_idxs{block}<sub_block)))*param.M1_spike_wave_Fs))];
+                            block_spikes{chan+1,2} = [block_spikes{chan+1,2}; sb_spike_clusters];
+                            block_spikes{chan+1,3} = [block_spikes{chan+1,3}, sb_waves];
+                            
+                            if sub_block == sb_idxs{block}(end)
+                                if mod(block,2) %sleep blocks
+                                    %These arrays get so large than only one can be open at a time which requires a lot of saving, clearing, and loading
+                                    load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat']);
+                                    load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat']);
+                                else %training blocks
+                                    load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat']);
+                                    load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat']);
+                                end
                                 
-%                                 %From raw
-%                                 chan_SEV = SEV2mat([origin_rootpath,animal,'\',param.Spike_path,'\',sub_block_names(sub_block,:)],'CHANNEL',channel+1+param.M1_chans);
-%                                 
-%                                 %TODO: Median subtraction
-%                                 
-%                                 % High pass filter
-%                                 CutOff_freqs = 300;
-%                                 Wn = CutOff_freqs./chan_SEV.RSn1.fs;
-%                                 filterOrder = 2;
-%                                 [b,a] = butter(filterOrder,Wn,'high');
-%                                 chan_full_wave = double(chan_SEV.RSn1.data);
-%                                 chan_full_wave = filtfilt(b,a,chan_full_wave);
-%                                 
-%                                 % Low pass filter
-%                                 CutOff_freqs = 5000;
-%                                 Wn = CutOff_freqs./chan_SEV.RSn1.fs;
-%                                 filterOrder = 2;
-%                                 [b,a] = butter(filterOrder,Wn,'low');
-%                                 chan_full_wave = filtfilt(b,a,chan_full_wave);
-%
-%                                 %Change the two 'sb_full_wave's below to 'chan_full_wave' and in the 2nd change 'channel' to '1' in the indexing.
-                                
-                                cluster_num = 0;
-                                for cluster = cluster_info.cluster_id(chan_clusters)'
-                                    cluster_num = cluster_num + 1;
-                                    cluster_spike_times = sb_spike_times{sub_block}(sb_spike_clusters{sub_block} == cluster);
-                                    cluster_spike_waves = nan(30,length(cluster_spike_times));
-                                    for i = 1:size(cluster_spike_waves,2)
-                                        t_stamp = round(cluster_spike_times(i)*param.Cb_spike_wave_Fs);
-                                        if extract_waveforms
-                                            if (t_stamp + 22) <= size(sb_full_wave,2) && (t_stamp - 7) > 0
-                                                cluster_spike_waves(:,i) = sb_full_wave(channel+1,t_stamp - 7:t_stamp + 22);
-                                            end
+                                cell_idx = 0;
+                                for neuron = 1:length(cluster_info.cluster_id)
+                                    if (strcmp(cluster_info.group(neuron,:),'good ') || strcmp(cluster_info.group(neuron,:),'mua  ') || strcmp(cluster_info.group(neuron,:),'good') || strcmp(cluster_info.group(neuron,:),'mua '))
+                                        cell_idx = cell_idx+1;
+                                        if strcmp(cluster_info.group(neuron,:),'mua  ') || strcmp(cluster_info.group(neuron,:),'mua ')
+                                            param.M1_mua_neurons{day}(dat_chan,cell_idx) = true;
                                         end
-                                    end
-                                    
-                                    %Concatinate into blocks
-                                    cell_idx = find(all_good_clusters == cluster);
-                                    Cb_spike_timestamps{dat_shant,cell_idx} = cat(2,Cb_spike_timestamps{dat_shant,cell_idx},cluster_spike_times');
-                                    Cb_spike_waves{dat_shant + (channel),cell_idx} = cat(2,Cb_spike_waves{dat_shant + (channel),cell_idx},cluster_spike_waves);
-                                    param.Cb_neuron_chans{day}(dat_shant,cell_idx) = channel;
-                                    
-                                    cluster_groups = cluster_info.group(chan_clusters,:);
-                                    if strcmp(cluster_groups(cluster_num,:),'mua  ') || strcmp(cluster_groups(cluster_num,:),'mua ')
-                                        param.Cb_mua_neurons{day}(dat_shant,cell_idx) = true;
+                                        param.M1_neuron_chans{day}(dat_chan,cell_idx) = cluster_info.ch(neuron);
+                                        M1_spike_timestamps{dat_chan,cell_idx} = block_spikes{chan+1,1}(block_spikes{chan+1,2} == cluster_info.cluster_id(neuron))';
+                                        
+                                        for sub_chan = 0:(param.M1_shant_site_num-1)
+                                            M1_spike_waves{dat_chan + sub_chan,cell_idx} = block_spikes{chan+1,3}(:, block_spikes{chan+1,2} == cluster_info.cluster_id(neuron),sub_chan+1);
+                                        end
+                                        M1_spike_timestamps{dat_chan,cell_idx} = M1_spike_timestamps{dat_chan,cell_idx}/param.M1_spike_wave_Fs;
                                     end
                                 end
+                                
+                                if mod(block,2) %sleep blocks
+                                    %These arrays get so large than only one can be open at a time which requires a lot of saving, clearing, and loading
+                                    save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                                    save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
+                                else %training blocks
+                                    save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                                    save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
+                                end
+                                block_spikes = cell((param.M1_chans/param.M1_shant_site_num),3);
                             end
                         end
-                        
-                        if mod(block,2) %sleep blocks
-                            save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
-                            save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
-                        else %training blocks
-                            save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
-                            save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
-                        end
-                        
                     end
                 end
             end
-            clear block_spikes sb_waves sb_chan_full_wave
+        end
+        clear block_spikes sb_waves sb_chan_full_wave
+        
+        %Cb spike times
+        if param.Cb_chans == 0
+            block_spikes = cell(0,3);
+        else
+            block_spikes = cell((param.Cb_chans/param.Cb_shant_site_num),2);
+        end
+        shant_vect = 0:((param.Cb_chans/param.Cb_shant_site_num)-1);
+        if isnan(shant_vect)
+            shant_vect = [];
+        end
+        for shant = shant_vect
+            %                 spike_times = double(readNPY([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0.GUI\spike_times.npy']));
+            %                 spike_clusters = readNPY([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0.GUI\spike_clusters.npy']);
+            %                 cluster_info = tdfread([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0.GUI\cluster_info.tsv']);
+            %                 dat_shant = (shant*param.Cb_shant_site_num)+1;
             
-        %end
+            try
+                spike_times = double(readNPY([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0.GUI\spike_times.npy']));
+                spike_clusters = readNPY([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0.GUI\spike_clusters.npy']);
+                cluster_info = tdfread([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_0.GUI\cluster_info.tsv']);
+                dat_shant = (shant*param.Cb_shant_site_num)+1;
+                plex = false;
+            catch
+                [Cb_spike_timestamps_day, Cb_spike_waves_day, ~] = fn_readPlxFile([origin_rootpath,animal,'/PLX_Converted/SORTED_TDT_data_',param.sleep_block_names{day,1}(1,end-17:end),'_eTe1_1_mrg.plx']);
+                spike_timestamps_day = Cb_spike_timestamps_day((shant*param.Cb_shant_site_num)+1,:);
+                spike_waves_day = Cb_spike_waves_day((shant*param.Cb_shant_site_num)+1,:);
+                plex = true;
+            end
+            
+            if plex
+                durMAT(4,:) = durMAT(2,:);
+                for sub_block = 1:size(sub_block_names,1)
+                    for block = 1:4
+                        if ismember(sub_block, sb_idxs{block})
+                            break
+                        end
+                    end
+                    
+                    sb_spike_times = cell(1,size(spike_timestamps_day,2));
+                    sb_spike_waves = cell(1,size(spike_timestamps_day,2));
+                    if mod(block,2) %sleep blocks
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat']);
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat']);
+                    else %training blocks
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat']);
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat']);
+                    end
+                    
+                    for neuron = 1:size(spike_timestamps_day,2)
+                        if ~isempty(spike_timestamps_day{neuron})
+                            sb_spike_waves{neuron} = spike_waves_day{neuron}(:,spike_timestamps_day{neuron} <= durMAT(4,sub_block));
+                            sb_spike_times{neuron} = spike_timestamps_day{neuron}(spike_timestamps_day{neuron} <= durMAT(4,sub_block));
+                            
+                            sb_spike_waves{neuron}(:,sb_spike_times{neuron} > durMAT(5,sub_block)) = [];
+                            sb_spike_times{neuron}(sb_spike_times{neuron} > durMAT(5,sub_block)) = [];
+                            
+                            spike_timestamps_day{neuron} = spike_timestamps_day{neuron} - durMAT(5,sub_block);
+                            
+                            spike_waves_day{neuron}(:,spike_timestamps_day{neuron} < 0) = [];
+                            spike_timestamps_day{neuron}(spike_timestamps_day{neuron} < 0) = [];
+                            
+                            Cb_spike_timestamps{(shant*param.Cb_shant_site_num)+1,neuron} = [Cb_spike_timestamps{(shant*param.Cb_shant_site_num)+1,neuron} (sb_spike_times{neuron} + sum(durMAT(5,sb_idxs{block}(sb_idxs{block}<sub_block))))];
+                            Cb_spike_waves{(shant*param.Cb_shant_site_num)+1,neuron} = [Cb_spike_waves{(shant*param.Cb_shant_site_num)+1,neuron}, sb_spike_waves{neuron}];
+                        end
+                    end
+                    
+                    if mod(block,2) %sleep blocks
+                        %These arrays get so large than only one can be open at a time which requires a lot of saving, clearing, and loading
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
+                    else %training blocks
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
+                    end
+                end
+                
+            elseif param.Cb_neurons < sum(strcmp(string(cluster_info.group),'good ') | strcmp(string(cluster_info.group),'mua  ') | strcmp(string(cluster_info.group),'good') | strcmp(string(cluster_info.group),'mua '))
+                disp(['param.Cb_neurons needs to be increased to ', num2str(length(unique(spike_clusters)))])
+                param.Cb_neurons = length(unique(spike_clusters));
+                s_err = true;
+            elseif ~s_err
+                good_cluster_idxs = (strcmp(string(cluster_info.group),'good ') | strcmp(string(cluster_info.group),'mua  ') | strcmp(string(cluster_info.group),'good') | strcmp(string(cluster_info.group),'mua '));
+                all_good_clusters = cluster_info.cluster_id(good_cluster_idxs);
+                
+                %Sort spiketimes into sub-blocks
+                sb_spike_times = cell(1,size(sub_block_names,1));
+                sb_spike_clusters = cell(1,size(sub_block_names,1));
+                for sub_block = 1:size(sub_block_names,1)
+                    chan_SEV = SEV2mat([origin_rootpath,animal,'\',param.Spike_path,'\',sub_block_names(sub_block,:)],'CHANNEL',1);
+                    if isempty(chan_SEV)
+                        chan_full_wave = ones(1,round(durMAT(3,sub_block)*param.Cb_spike_wave_Fs));
+                    else
+                        chan_full_wave = chan_SEV.RSn1.data;
+                    end
+                    clear chan_SEV
+                    
+                    if isempty(chan_full_wave)
+                        durMAT(4,sub_block) = durMAT(3,sub_block);
+                    else
+                        durMAT(4,sub_block) = length(chan_full_wave)/param.Cb_spike_wave_Fs;
+                    end
+                    
+                    sb_spike_times{sub_block} = spike_times(spike_times <= size(chan_full_wave,2));
+                    sb_spike_clusters{sub_block} = spike_clusters(1:length(sb_spike_times{sub_block}));
+                    spike_clusters(1:length(sb_spike_times{sub_block})) = [];
+                    spike_times(1:length(sb_spike_times{sub_block})) = [];
+                    spike_times = spike_times - size(chan_full_wave,2);
+                    clear chan_full_wave
+                    
+                    %Truncate
+                    sb_spike_times{sub_block}(sb_spike_times{sub_block} > (durMAT(5,sub_block)*param.Cb_spike_wave_Fs)) = [];
+                    sb_spike_clusters{sub_block} = sb_spike_clusters{sub_block}(1:length(sb_spike_times{sub_block}));
+                    
+                    
+                end
+                
+                for sub_block = 1:size(sub_block_names,1)
+                    
+                    if extract_waveforms
+                        clear sb_full_wave
+                        fiD = fopen([origin_rootpath,animal,'\',param.Spike_path,'\',animal,'-', param.durFiles(day,11:16), '_DAT_files\Cb\',Cb_shant_name,'_', num2str(shant), '\SU_CONT_Cb_',Cb_shant_name_short,'_', num2str(shant), '_', num2str(sub_block-1), '.dat'],'r');
+                        sb_full_wave = fread(fiD,'float32');
+                        sb_full_wave = reshape(sb_full_wave,param.Cb_shant_site_num,length(sb_full_wave)/param.Cb_shant_site_num);
+                        fclose(fiD);
+                    end
+                    
+                    %Convert to Seconds and zero to the start of the block
+                    for check_block = 1:4
+                        sb_ordinal = find(sub_block == sb_idxs{check_block});
+                        if ~isempty(sb_ordinal)
+                            block = check_block;
+                            sb_offset = 0;
+                            for prev_sb = 1:(sb_ordinal-1)
+                                sb_offset = sb_offset + durMAT(4,sub_block-prev_sb);
+                            end
+                            sb_spike_times{sub_block} = sb_spike_times{sub_block}/param.Cb_spike_wave_Fs;
+                            sb_spike_times{sub_block} = sb_spike_times{sub_block}+sb_offset;
+                        end
+                    end
+                    
+                    if mod(block,2) %sleep blocks
+                        %These arrays get so large than only one can be open at a time which requires a lot of saving, clearing, and loading
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat']);
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat']);
+                    else %training blocks
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat']);
+                        load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat']);
+                    end
+                    
+                    for channel = 0:(param.Cb_shant_site_num-1)
+                        chan_clusters = cluster_info.ch == channel & good_cluster_idxs;
+                        if sum(chan_clusters)
+                            
+                            %                                 %From raw
+                            %                                 chan_SEV = SEV2mat([origin_rootpath,animal,'\',param.Spike_path,'\',sub_block_names(sub_block,:)],'CHANNEL',channel+1+param.M1_chans);
+                            %
+                            %                                 %TODO: Median subtraction
+                            %
+                            %                                 % High pass filter
+                            %                                 CutOff_freqs = 300;
+                            %                                 Wn = CutOff_freqs./chan_SEV.RSn1.fs;
+                            %                                 filterOrder = 2;
+                            %                                 [b,a] = butter(filterOrder,Wn,'high');
+                            %                                 chan_full_wave = double(chan_SEV.RSn1.data);
+                            %                                 chan_full_wave = filtfilt(b,a,chan_full_wave);
+                            %
+                            %                                 % Low pass filter
+                            %                                 CutOff_freqs = 5000;
+                            %                                 Wn = CutOff_freqs./chan_SEV.RSn1.fs;
+                            %                                 filterOrder = 2;
+                            %                                 [b,a] = butter(filterOrder,Wn,'low');
+                            %                                 chan_full_wave = filtfilt(b,a,chan_full_wave);
+                            %
+                            %                                 %Change the two 'sb_full_wave's below to 'chan_full_wave' and in the 2nd change 'channel' to '1' in the indexing.
+                            
+                            cluster_num = 0;
+                            for cluster = cluster_info.cluster_id(chan_clusters)'
+                                cluster_num = cluster_num + 1;
+                                cluster_spike_times = sb_spike_times{sub_block}(sb_spike_clusters{sub_block} == cluster);
+                                cluster_spike_waves = nan(30,length(cluster_spike_times));
+                                for i = 1:size(cluster_spike_waves,2)
+                                    t_stamp = round(cluster_spike_times(i)*param.Cb_spike_wave_Fs);
+                                    if extract_waveforms
+                                        if (t_stamp + 22) <= size(sb_full_wave,2) && (t_stamp - 7) > 0
+                                            cluster_spike_waves(:,i) = sb_full_wave(channel+1,t_stamp - 7:t_stamp + 22);
+                                        end
+                                    end
+                                end
+                                
+                                %Concatinate into blocks
+                                cell_idx = find(all_good_clusters == cluster);
+                                Cb_spike_timestamps{dat_shant,cell_idx} = cat(2,Cb_spike_timestamps{dat_shant,cell_idx},cluster_spike_times');
+                                Cb_spike_waves{dat_shant + (channel),cell_idx} = cat(2,Cb_spike_waves{dat_shant + (channel),cell_idx},cluster_spike_waves);
+                                param.Cb_neuron_chans{day}(dat_shant,cell_idx) = channel;
+                                
+                                cluster_groups = cluster_info.group(chan_clusters,:);
+                                if strcmp(cluster_groups(cluster_num,:),'mua  ') || strcmp(cluster_groups(cluster_num,:),'mua ')
+                                    param.Cb_mua_neurons{day}(dat_shant,cell_idx) = true;
+                                end
+                            end
+                        end
+                    end
+                    
+                    if mod(block,2) %sleep blocks
+                        %These arrays get so large than only one can be open at a time which requires a lot of saving, clearing, and loading
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.s_block_names{ceil(block/2)},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
+                    else %training blocks
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_timestamps.mat'], 'M1_spike_timestamps', 'Cb_spike_timestamps');
+                        save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block/2},'/Spike_waveforms.mat'], 'M1_spike_waves', 'Cb_spike_waves', '-v7.3');
+                    end
+                    
+                end
+            end
+        end
+        clear block_spikes sb_waves sb_chan_full_wave        
         clearvars -except code_rootpath rootpath origin_rootpath animal param enabled day s_err M1_shant_name M1_shant_name_short Cb_shant_name Cb_shant_name_short extract_waveforms;
     end
     save([rootpath,animal,'/Parameters.mat'],'param');
@@ -2632,6 +2788,7 @@ if enabled(29)
 end
 
 %% Legacy Rename Spike Timestamp Data *DO NOT USE - integrate into (29) as needed*
+% This is an old version from before the spike data collection process was standardized. The process for had to be added by hand for each animal.
 
 if false
     error('Bad Block') %#ok<UNRCH>
@@ -4669,29 +4826,17 @@ end
 
 if enabled(30)
     disp('Block 30...')
-%     addpath(genpath('Z:\Matlab for analysis'))
-%     Fs = 1017.3;
-%     bin_size = 25; %In miliseconds
-%     hist_indexes = (-4000+(bin_size/2)):bin_size:(4000-(bin_size/2));
     for day=1:param.days
-%         M1_day = cell(32,6);
-%         Cb_day = cell(32,6);
         for block=1:param.blocks
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike_timestamps.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/reach_onset_delays.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/WAV_Truncated.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
                         
+            % Create 8 second snapshots of the spike activity coesponding to the LFP snapshots
             [M1_spike_snapshots_full, Cb_spike_snapshots_full_temp] = spike_snapshot_extraction(M1_spike_timestamps, Cb_spike_timestamps, WAVE2_t, param.M1_Fs, param.Cb_Fs, param.Wave_Fs, Oseconds, data, 4, 4);
             Cb_spike_snapshots_full = cell(size(Cb_spike_snapshots_full_temp));
             Cb_spike_snapshots_full(1:4:size(Cb_spike_snapshots_full_temp,1),:) = Cb_spike_snapshots_full_temp(1:4:size(Cb_spike_snapshots_full_temp,1),:);
-            
-%             for chan = 1:32
-%                 for node = 1:6
-%                     M1_day{chan,node} = [M1_day{chan,node}, M1_spike_snapshots_full{chan,node,:}];
-%                     Cb_day{chan,node} = [Cb_day{chan,node}, Cb_spike_snapshots_full{chan,node,:}];
-%                 end
-%             end
 
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/spiketrain_snapshots_full.mat'], 'M1_spike_snapshots_full', 'Cb_spike_snapshots_full');
 
@@ -4702,29 +4847,26 @@ if enabled(30)
 end
 
 %% Identify task-related sub-set and create Single-Neuron Spike Histograms and Rasters (31)
+% Tag neurons that are modulated around reach onest and create a whole bunch of PETH and rastor plots (one for each unit). 
 
 if enabled(31)
     disp('Block 31...')
     save_figs = true;
     addpath(genpath('Z:\Matlab for analysis'))
+    
+    %Parameters
     bin_size = 25; %In miliseconds
     hist_indexes = (-4000+(bin_size/2)):bin_size:(4000-(bin_size/2)); %In miliseconds
     M1_hist_indexes = (hist_indexes+4000)*param.M1_Fs/1000;
     Cb_hist_indexes = (hist_indexes+4000)*param.Cb_Fs/1000;
-    bp = barsdefaultParams;
-    bp.prior_id = 'POISSON';
-    bp.dparams = 4;
-    bp.use_logspline = 0;
     
     baseline_range = [-4000 -2000];
     roi_boundaries = [-350 850];
     window_width = 200;
     window_step_size = 25; %In miliseconds
-    param.M1_task_related_neurons = cell(param.days,1);
-    param.Cb_task_related_neurons = cell(param.days,1);
     task_related_sdv_threshold = 1.25;
     wave_plot_num = 200;
-    
+
     win_size = ceil(window_width/bin_size);
     step_size = ceil(window_step_size/bin_size);
     if roi_boundaries(2) - roi_boundaries(1) < window_width
@@ -4737,9 +4879,18 @@ if enabled(31)
     multiphasic_time_window = [250 500]; %In miliseconds
     multiphasic_sdv_threshold = 0.25;
     param.smoothing_param = 0.00001; %SmoothingParam recomended to be 1/(1+(h^3/6)) where h is the spacing between data points, i.e. the bin width. This would be roughly 0.0004. This wasn't low enough.
+    
+    bp = barsdefaultParams;
+    bp.prior_id = 'POISSON';
+    bp.dparams = 4;
+    bp.use_logspline = 0;
+    
+    %Preallocation
     param.M1_multiphasic_neurons = cell(param.days,1);
     param.Cb_multiphasic_neurons = cell(param.days,1);
-        
+    param.M1_task_related_neurons = cell(param.days,1);
+    param.Cb_task_related_neurons = cell(param.days,1);    
+    
     for day=1:param.days
         M1_day_bins = zeros(param.M1_chans, param.M1_neurons, length(hist_indexes));
         Cb_day_bins = zeros(param.Cb_chans, param.Cb_neurons, length(hist_indexes));
@@ -4759,9 +4910,12 @@ if enabled(31)
             
             [chans, codes, trials] = size(M1_spike_snapshots_full);
             num_neurons = sum(sum(~cellfun('isempty',M1_spike_timestamps)));
+            
+            %Preallocation
             all_M1_neuron_ave_hz = zeros(num_neurons,8000/bin_size);
             all_M1_neuron_alt_hist = zeros(num_neurons,8000/bin_size);
             all_M1_neuron_trial_bins = zeros(num_neurons,8000/bin_size,trials);
+            
             neuron_num = 1;
             for chan = 1:param.M1_shant_site_num:chans
                 for code = 1:codes
@@ -4773,6 +4927,8 @@ if enabled(31)
                     all_trial_bins = zeros(trials,8000/bin_size);
                     raster_x = [];
                     raster_y = [];
+                    
+                    %Create histogram of all trials
                     for trial = 1:trials
                         bin_tags = M1_spike_snapshots_full{chan, code, trial};
                         [trial_bins, ~] = hist(bin_tags, M1_hist_indexes);
@@ -4783,6 +4939,7 @@ if enabled(31)
                         raster_x = [raster_x trial_raster_x]; %#ok<AGROW>
                         raster_y = [raster_y trial_raster_y]; %#ok<AGROW>
                     end
+                    
                     if isempty(all_trial_bins)
                         std_err = zeros(1,size(all_trial_bins,2));
                     else
@@ -4799,6 +4956,7 @@ if enabled(31)
                     
                     M1_day_bins(chan,code,:) = M1_day_bins(chan,code,:) + shiftdim(bins,-1);
                     
+                    %Plot spike rate histogram
                     hist_figure = figure;
                     subplot(4,3,1:9)
                     spike_hist = bar(hist_indexes,ave_hz,'FaceColor',[1 0.6 0.6]);
@@ -4820,6 +4978,7 @@ if enabled(31)
                     xlabel('Time (ms)');
                     ylabel('Spike Rate (hz)');
                     
+                    %Plot waveform
                     subplot(4,3,10)
                     if exist('M1_spike_waves','var')
                         num_waves = min(size(M1_spike_waves{chan, code},2),wave_plot_num);
@@ -4870,8 +5029,11 @@ if enabled(31)
             
             [chans, codes, trials] = size(Cb_spike_snapshots_full);
             num_neurons = sum(sum(~cellfun('isempty',Cb_spike_timestamps)));
+            
+            %Preallocation
             all_Cb_neuron_ave_hz = zeros(num_neurons,8000/bin_size);
             all_Cb_neuron_trial_bins = zeros(num_neurons,8000/bin_size,trials);
+            
             neuron_num = 1;
             for chan = 1:param.Cb_shant_site_num:chans
                 for code = 1:codes
@@ -4905,6 +5067,7 @@ if enabled(31)
                     
                     Cb_day_bins(chan,code,:) = Cb_day_bins(chan,code,:) + shiftdim(bins,-1);
                     
+                    %Plot spike rate histogram
                     hist_figure = figure;
                     subplot(4,3,1:9)
                     spike_hist = bar(hist_indexes,ave_hz,'FaceColor',[0.8 0.9 0.7]);
@@ -4930,6 +5093,7 @@ if enabled(31)
                         wave_win1_end = wave_win_len-7;
                     end
                     
+                    %Plot waveforms (This was originally writen with a tetrode in mind and would plot all four waveforms. As our shants got more sites this stopped making sense and was altered.
                     xlabel('Time (ms)');
                     ylabel('Spike Rate (hz)');
                     subplot(4,3,10)
@@ -4947,7 +5111,7 @@ if enabled(31)
                             error('I think something weird happened.')
                         end
                     end
-                    xlabel('Time (ms)'); %We'll need to change this to a scale bar rather than the x-axis
+                    xlabel('Time (ms)');
                     ylabel('Voltage (mV)');
                     if save_figs
                         saveas(hist_figure,[rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike_Figures/Cb_spiking_histogram_channel', num2str(chan), '_cell', num2str(code), '.tiff']);
@@ -4991,6 +5155,7 @@ if enabled(31)
             save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/neuron_firing_rates.mat'], 'all_M1_neuron_ave_hz', 'all_Cb_neuron_ave_hz', 'all_M1_neuron_hist', 'all_Cb_neuron_hist'); %, 'all_M1_neuron_trial_bins', 'all_Cb_neuron_trial_bins');
         end
         
+        %Identify neurons where the firing rate deviates from the baseline by task_related_sdv_threshold standard deviations
         baselines = mean(M1_day_bins(:, :, hist_indexes >= baseline_range(1) & hist_indexes < baseline_range(2)), 3);
         std_dev = std(M1_day_bins(:, :, hist_indexes >= baseline_range(1) & hist_indexes < baseline_range(2)), 0, 3);
         region_of_interest = M1_day_bins(:, :, hist_indexes >= roi_boundaries(1) & hist_indexes < roi_boundaries(2));
@@ -5026,6 +5191,7 @@ if enabled(31)
 end
 
 %% Create Single-Trial Spike Histograms and Rasters (32)
+% Create a PETH and rastor plot of all units over a single trial 
 if enabled(32)
     disp('Block 32...')
     day = 5;
@@ -5047,6 +5213,8 @@ if enabled(32)
     M1_trial_spikes = M1_spike_snapshots_full(:,:,trial);
     Cb_trial_spikes = Cb_spike_snapshots_full(:,:,trial);
     
+    %M1
+    %Create a histogram for each trial. Since only a single neuron and trial go into these histograms they are effectivly binary
     neuron_bin_cell = cellfun(@(x)(histcounts(x,0:(param.M1_Fs*bin_size)/1000:param.M1_Fs*8)),M1_trial_spikes,'UniformOutput',false);
     neuron_bin_mat = cell2mat(neuron_bin_cell(:));
     trial_bins = sum(neuron_bin_mat,1);
@@ -5065,6 +5233,7 @@ if enabled(32)
     raster_x(raster_y == 0) = [];
     raster_y(raster_y == 0) = [];
     
+    %Plot PETH
     hold on
     peth_figure = line(bin_centers,trial_bins,'Color',[1 0 0]);
     line([0 0], [-1 max(trial_bins)], 'Color', 'green', 'LineStyle', '--')
@@ -5075,6 +5244,7 @@ if enabled(32)
     saveas(peth_figure, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike_Figures/M1_peth_trial', num2str(true_trial_num), '.fig']);
     close all;
     
+    %Plot raster
     hold on
     raster_figure = plot(raster_x(:),[0 1]+raster_y(:),'LineWidth',2,'Color',rgb('Red')); %raster_figure = scatter(raster_x(:), raster_y(:),'r.');
     line([0 0], [0 size(neuron_bin_mat,2)], 'Color', 'green', 'LineStyle', '--')
@@ -5085,6 +5255,8 @@ if enabled(32)
     saveas(raster_figure, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike_Figures/M1_raster_trial', num2str(true_trial_num), '.fig']);
     close all;
     
+    %Cb
+    %Create a histogram for each trial. Since only a single neuron and trial go into these histograms they are effectivly binary
     neuron_bin_cell = cellfun(@(x)(histcounts(x,0:(param.Cb_Fs*bin_size)/1000:param.Cb_Fs*8)),Cb_trial_spikes,'UniformOutput',false);
     neuron_bin_mat = cell2mat(neuron_bin_cell(:));
     trial_bins = sum(neuron_bin_mat,1);
@@ -5094,15 +5266,16 @@ if enabled(32)
     trial_bins = ss_fit(hist_indexes)';
     %divide trial_bins by number of channels to get ave spikes per channel
     %multiply trial_bins by 1000/bin_size to get ave hz
-    trial_bins = trial_bins*((1000/bin_size)/size(neuron_bin_mat,1));
-    
     neuron_spike_counts = sum(neuron_bin_mat,2);
     neuron_bin_mat(neuron_spike_counts == 0,:) = [];
+    trial_bins = trial_bins*((1000/bin_size)/size(neuron_bin_mat,1));
+    
     raster_y = neuron_bin_mat .* (1:size(neuron_bin_mat,1))';
     raster_x = neuron_bin_mat .* (bin_centers);
     raster_x(raster_y == 0) = [];
     raster_y(raster_y == 0) = [];
     
+    %Plot PETH
     hold on
     peth_figure = line(bin_centers,trial_bins,'Color',[0 1 0]);
     line([0 0], [-1 max(trial_bins)], 'Color', 'green', 'LineStyle', '--')
@@ -5113,6 +5286,7 @@ if enabled(32)
     saveas(peth_figure, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike_Figures/Cb_peth_trial', num2str(true_trial_num), '.fig']);
     close all;
     
+    %Plot raster
     hold on
     raster_figure = plot(raster_x(:),[0 1]+raster_y(:),'LineWidth',2,'Color',rgb('Green')); %raster_figure = scatter(raster_x(:), raster_y(:),'g.');
     line([0 0], [0 size(neuron_bin_mat,2)], 'Color', 'green', 'LineStyle', '--')
@@ -5127,6 +5301,7 @@ if enabled(32)
 end
 
 %% Create Neuron Spike-rate Changes Sorted by Peak Timing (33)
+%Data analysis behind Ramanathan 2018 Fig 1c
 
 if enabled(33)
     disp('Block 33...')
@@ -5151,6 +5326,7 @@ if enabled(33)
             
             trials = trials + size(M1_spike_snapshots_full,3);
             
+            %Create day histogram
             if isempty(M1_day_hist)
                 M1_day_hist = all_M1_neuron_hist;
                 Cb_day_hist = all_Cb_neuron_hist;
@@ -5164,6 +5340,8 @@ if enabled(33)
             end
         end
         
+        %M1
+        %Smooth firing rate data
         M1_day_hist(~sum(M1_day_hist,2),:) = []; %#ok<SAGROW>
         neuron_num = size(M1_day_hist,1);
         M1_day_hist_smooth = zeros(size(M1_day_hist));
@@ -5174,20 +5352,24 @@ if enabled(33)
             M1_day_hist_smooth(i,:) = ss_fit(1:length(M1_day_hist(i,:)))';
         end
         
+        %Normalize
         data_mean = mean(M1_day_hist_smooth(:,zs_subset),2);
         data_std = std(M1_day_hist_smooth(:,zs_subset),[],2);
         M1_zs_data = (M1_day_hist_smooth - data_mean)./data_std;
         M1_zs_data = M1_zs_data(:,hm_subset);
         
+        %Identify the maximum and minimum for all neurons and find out in which neurons the maximum is the greater deviation
         M1_inc_max = max(M1_zs_data,[],2);
         M1_dec_min = min(M1_zs_data,[],2);
         max_wins = (M1_inc_max) > abs(M1_dec_min);
         
+        %Split the two populations
         inc_M1_day_hist_smooth = M1_zs_data(max_wins,:);
         dec_M1_day_hist_smooth = M1_zs_data(~max_wins,:);
         M1_inc_max = M1_inc_max(max_wins);
         M1_dec_min = M1_dec_min(~max_wins);
 
+        %Count the neurons in each population and identify the time at which the peak deviation occured
         num_inc = length(M1_inc_max);
         num_dec = length(M1_dec_min);
         M1_inc_times = zeros(1,num_inc);
@@ -5199,6 +5381,7 @@ if enabled(33)
             M1_dec_times(i) = find(dec_M1_day_hist_smooth(i,:) == M1_dec_min(i),1);
         end
         
+        %Sort by time of peak deviation
         [M1_inc_times, M1_inc_sort_idx] = sort(M1_inc_times);
         M1_inc_max = M1_inc_max(M1_inc_sort_idx);
         inc_M1_day_hist_smooth = inc_M1_day_hist_smooth(M1_inc_sort_idx,:);
@@ -5206,6 +5389,8 @@ if enabled(33)
         M1_dec_min = M1_dec_min(M1_dec_sort_idx);
         dec_M1_day_hist_smooth = dec_M1_day_hist_smooth(M1_dec_sort_idx,:);
         
+        %Cb
+        %Smooth firing rate data
         Cb_day_hist(~sum(Cb_day_hist,2),:) = [];
         neuron_num = size(Cb_day_hist,1);
         Cb_day_hist_smooth = zeros(size(Cb_day_hist));
@@ -5213,20 +5398,24 @@ if enabled(33)
             Cb_day_hist_smooth(i,:) = smooth(Cb_day_hist(i,:),8);
         end
         
+        %Normalize
         data_mean = mean(Cb_day_hist_smooth(:,zs_subset),2);
         data_std = std(Cb_day_hist_smooth(:,zs_subset),[],2);
         Cb_zs_data = (Cb_day_hist_smooth - data_mean)./data_std;
         Cb_zs_data = Cb_zs_data(:,hm_subset);
         
+        %Identify the maximum and minimum for all neurons and find out in which neurons the maximum is the greater deviation
         Cb_inc_max = max(Cb_zs_data,[],2);
         Cb_dec_min = min(Cb_zs_data,[],2);
         max_wins = (Cb_inc_max) > abs(Cb_dec_min);
         
+        %Split the two populations
         inc_Cb_day_hist_smooth = Cb_zs_data(max_wins,:);
         dec_Cb_day_hist_smooth = Cb_zs_data(~max_wins,:);
         Cb_inc_max = Cb_inc_max(max_wins);
         Cb_dec_min = Cb_dec_min(~max_wins);
         
+        %Count the neurons in each population and identify the time at which the peak deviation occured
         num_inc = length(Cb_inc_max);
         num_dec = length(Cb_dec_min);
         Cb_inc_times = zeros(1,num_inc);
@@ -5238,6 +5427,7 @@ if enabled(33)
             Cb_dec_times(i) = find(dec_Cb_day_hist_smooth(i,:) == Cb_dec_min(i),1);
         end
         
+        %Sort by time of peak deviation
         [Cb_inc_times, Cb_inc_sort_idx] = sort(Cb_inc_times);
         Cb_inc_max = Cb_inc_max(Cb_inc_sort_idx);
         inc_Cb_day_hist_smooth = inc_Cb_day_hist_smooth(Cb_inc_sort_idx,:);
@@ -5253,6 +5443,7 @@ if enabled(33)
 end
 
 %% Create Sorted z-Scored Firing-Rate Heatmap (34)
+% Ramanathan 2018 Fig 1c
 
 if enabled(34)
     disp('Block 34...')
@@ -5264,12 +5455,15 @@ if enabled(34)
     for day=1:param.days
         load([rootpath,animal,'/Day',num2str(day),'/sorted_firing_rates.mat']);
         
+        %I didn't want to copy out the plotting code 4 times so I put the data into a cell array...
         map_data{1} = inc_M1_day_hist_smooth;
         map_data{2} = dec_M1_day_hist_smooth;
         map_data{3} = inc_Cb_day_hist_smooth;
         map_data{4} = dec_Cb_day_hist_smooth;
         
+        %...and looped through it
         for i=1:4
+            %Plot
             if isempty(map_data{i})
                 figure
                 title('No Data')
@@ -5300,6 +5494,8 @@ if enabled(35)
     disp('Block 35...')
     addpath(genpath('Z:/Matlab for analysis/chronux_2_10/chronux/spectral_analysis'))
     addpath(genpath('Z:/Matlab for analysis/eeglab/functions'))
+    
+    %Parameters
     M1_channels_of_interest = [2];  %  I060: 12 I076: 15 I061: 29 I064: 28 I086: 9  I089: 2, 26
     Cb_channels_of_interest = [7]; %  I060: 8  I076: 23 I061: 20 I064: 17 I086: 57 I089: 7
     if isempty(M1_channels_of_interest)
@@ -5311,6 +5507,7 @@ if enabled(35)
     M1_channels_of_interest = find(ismember(param.M1_good_chans, M1_channels_of_interest));
     Cb_channels_of_interest = find(ismember(param.Cb_good_chans, Cb_channels_of_interest));
     
+    %subset of neurons to use. Empty enables all.
     M1_neurons_of_interest = {[],...
                               [],...
                               [],...
@@ -5326,13 +5523,6 @@ if enabled(35)
         Cb_neurons_of_interest = {1:(param.Cb_chans*param.Cb_neurons), 1:(param.Cb_chans*param.Cb_neurons), 1:(param.Cb_chans*param.Cb_neurons), 1:(param.Cb_chans*param.Cb_neurons), 1:(param.Cb_chans*param.Cb_neurons)};
     end
     
-    coh_params.Fs = param.M1_Fs;
-    coh_params.fpass = [0 20];
-    coh_params.tapers = [3 5];
-    coh_params.trialave = 0;
-    coh_params.pad = 1;
-    coh_params.err = [2 0.05];
-    
     min_spikes = 20;
     kern_stdv = 25; %100
     if kern_stdv == 0
@@ -5343,6 +5533,14 @@ if enabled(35)
         Cb_kernel = gausswin(round(16*param.Cb_Fs),round(16*param.Cb_Fs)/kern_stdv);
     end
     
+    %cohgram parameters
+    coh_params.Fs = param.M1_Fs;
+    coh_params.fpass = [0 20];
+    coh_params.tapers = [3 5];
+    coh_params.trialave = 0;
+    coh_params.pad = 1;
+    coh_params.err = [2 0.05];
+    
     for day=1:param.days
         for block=1:param.blocks
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Normalized_Snapshots', '.mat']);
@@ -5350,6 +5548,11 @@ if enabled(35)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/spiketrain_snapshots_full.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             
+            if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence_alt'],'dir')
+                mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence_alt']);
+            end
+            
+            %Use only trials with a reach and no noise in either area
             trial_codes = str2double(data(:,3));
             no_reach_trials = (1:size(data,1));
             no_reach_trials = no_reach_trials(trial_codes>1);
@@ -5359,15 +5562,13 @@ if enabled(35)
             [M1_spike_snapshots, ~] = get_common_good_data(M1_spike_snapshots_full, M1_snapshots, no_reach_trials, all_bad_trials, 3);
             [Cb_spike_snapshots, ~] = get_common_good_data(Cb_spike_snapshots_full, Cb_snapshots, no_reach_trials, all_bad_trials, 3);
             
-            if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence_alt'],'dir')
-                mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence_alt']);
-            end
-            
             for lfp_chan_num = M1_channels_of_interest
                 lfp_chan = find(param.M1_good_chans==lfp_chan_num);
                 if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence_alt/M1_Channel',num2str(param.M1_good_chans(lfp_chan))],'dir')
                     mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence_alt/M1_Channel',num2str(param.M1_good_chans(lfp_chan))]);
                 end
+                
+                %M1 channel to M1 neurons
                 neuron_idx = 0;
                 for s_chan = 1:param.M1_chans
                     for code = 1:param.M1_neurons
@@ -5375,6 +5576,7 @@ if enabled(35)
                         if ismember(neuron_idx,M1_neurons_of_interest{day})
                             if ((length([M1_spike_snapshots{s_chan,code,:}]) / size(M1_spike_snapshots,3)) >= min_spikes) && (param.M1_good_chans(lfp_chan) ~= s_chan)
                                 
+                                % 4 versions of the coherence calculation
 %                                 %Ver 1 (chronux with binned spikes)
 %                                 LFP_snapshots = squeeze(M1_snapshots(lfp_chan,:,:));
 %                                 M1_spike_bins = zeros(8139,size(M1_spike_snapshots,3));
@@ -5409,7 +5611,7 @@ if enabled(35)
                                 M1_spike_bins(:,sum(M1_spike_bins,1) == 0) = [];
                                 LFP_snapshots_flat = LFP_snapshots(:);
                                 spike_bins_flat = M1_spike_bins(:);
-                                %TODO what is the equivilent of phi_cmr for newcrossf
+                                %TODO: what is the equivilent of phi_cmr for newcrossf?
                                 [cross_trial_coh,~,coh_times,coh_freqs,~,~,cross_spec,x_pspec,y_pspec] = newcrossf(LFP_snapshots_flat, spike_bins_flat, size(M1_snapshots,2),[-4000 4000],param.M1_Fs,[0.01 0.1],'type','coher','freqs', [0 60]);
                                 %coh = abs(cross_spec ./ sqrt((x_pspec .* conj(x_pspec)).*(y_pspec .* conj(y_pspec)))); %cross_spec may still be complex; abs() if nessisary                                     %
                                 coh = cross_trial_coh;
@@ -5434,6 +5636,7 @@ if enabled(35)
                     end
                 end
                 
+                %M1 channel to Cb neurons
                 neuron_idx = 0;
                 for s_chan = 1:param.Cb_chans
                     for code = 1:param.Cb_neurons
@@ -5441,6 +5644,7 @@ if enabled(35)
                         if ismember(neuron_idx,Cb_neurons_of_interest{day})
                             if (length([Cb_spike_snapshots{s_chan,code,:}]) / size(Cb_spike_snapshots,3)) >= min_spikes
                                 
+                                % 4 versions of the coherence calculation
 %                                 %Ver 1
 %                                 LFP_snapshots = squeeze(M1_snapshots(lfp_chan,:,:));
 %                                 Cb_spike_bins = zeros(8139,size(Cb_spike_snapshots,3));
@@ -5508,12 +5712,14 @@ if enabled(35)
                     mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence_alt/Cb_Channel',num2str(param.Cb_good_chans(lfp_chan))]);
                 end
                 neuron_idx = 0;
+                %Cb channel to M1 neurons
                 for s_chan = 1:param.M1_chans
                     for code = 1:param.M1_neurons
                         neuron_idx = neuron_idx + 1;
                         if ismember(neuron_idx,M1_neurons_of_interest{day})
                             if (length([M1_spike_snapshots{s_chan,code,:}]) / size(M1_spike_snapshots,3)) >= min_spikes
                                 
+                                % 4 versions of the coherence calculation
 %                                 %Ver 1
 %                                 LFP_snapshots = squeeze(Cb_snapshots(lfp_chan,:,:));
 %                                 M1_spike_bins = zeros(8139,size(M1_spike_snapshots,3));
@@ -5573,6 +5779,7 @@ if enabled(35)
                     end
                 end
                 
+                %Cb channel to Cb neurons
                 neuron_idx = 0;
                 for s_chan = 1:param.Cb_chans
                     for code = 1:param.Cb_neurons
@@ -5580,6 +5787,7 @@ if enabled(35)
                         if ismember(neuron_idx,Cb_neurons_of_interest{day})
                             if ((length([Cb_spike_snapshots{s_chan,code,:}]) / size(Cb_spike_snapshots,3)) >= min_spikes) && (param.Cb_good_chans(lfp_chan) ~= (ceil(s_chan/4)*4)-3)
                                 
+                                % 4 versions of the coherence calculation
 %                                 %Ver 1
 %                                 LFP_snapshots = squeeze(Cb_snapshots(lfp_chan,:,:));
 %                                 Cb_spike_bins = zeros(8139,size(Cb_spike_snapshots,3));
@@ -5649,6 +5857,7 @@ if enabled(35)
 end
 
 %% Parallel Calculation of Spike/LFP Coherence Data (35.5)
+% (35) but done using multithreading
 
 if false 
     if isunix  %#ok<UNRCH>
@@ -5832,6 +6041,7 @@ if false
 end
 
 %% Plot Spike/LFP Coherence Data (36) !!Obsolete. Use 44!!
+% Kept in case I needed to reference it. I didn't.
 
 if false
     M1_channels_of_interest = [31]; %#ok<UNRCH>
@@ -5953,6 +6163,7 @@ if false
 end
 
 %% Collect Data for DataHigh package (GPFA Neural Trajectory Analysis) (37)
+% Data formating for Lemke 2019 Fig 8
 
 if enabled(37)
     disp('Block 37...')
@@ -5964,7 +6175,7 @@ if enabled(37)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike_timestamps.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals.mat']);
             
-            if task_related_only
+            if task_related_only %Remove task-unrelated neurons from data set
                 idxs = repmat(param.M1_task_related_neurons{day},1,1,size(M1_spike_snapshots_full,3));
                 M1_spike_snapshots_full(~idxs) = {[]};
                 M1_spike_timestamps(~param.M1_task_related_neurons{day}) = {[]};
@@ -5973,6 +6184,7 @@ if enabled(37)
                 Cb_spike_timestamps(~param.Cb_task_related_neurons{day}) = {[]};
             end
             
+            %Collect parameters
             trial_codes = str2double(data(:,3));
             reach_retract_interval(trial_codes > 1) = [];
             M1_reach_retract_interval = round(reach_retract_interval*1000);
@@ -5987,19 +6199,21 @@ if enabled(37)
             M1_GPFA_data = repmat(struct('data',[],'condition','','epochStarts', 1, 'epochColors', [0,0,0]),trials,1);
             Cb_GPFA_data = repmat(struct('data',[],'condition','','epochStarts', 1, 'epochColors', [0,0,0]),trials,1);
             for trial = 1:trials
-                if trial_codes(trial) == 1
+                if trial_codes(trial) == 1 %Success
+                    %M1
                     M1_GPFA_data(trial).condition = 'success';
                     M1_GPFA_data(trial).epochStarts = [1, 251, min(4001,251+M1_reach_retract_interval(trial))];
                     M1_GPFA_data(trial).epochColors = [0.7000,0.7000,0.7000;0,0.7000,0;0,0,0];
-                    
+                    %Cb
                     Cb_GPFA_data(trial).condition = 'success';
                     Cb_GPFA_data(trial).epochStarts = [1, 251, min(4001,251+Cb_reach_retract_interval(trial))];
                     Cb_GPFA_data(trial).epochColors = [0.7000,0.7000,0.7000;0,0.7000,0;0,0,0];
-                elseif reach_retract_interval(trial) > 0 
+                elseif reach_retract_interval(trial) > 0 %Failure
+                    %M1
                     M1_GPFA_data(trial).condition = 'failure';
                     M1_GPFA_data(trial).epochStarts = [1, 251, min(4001,251+M1_reach_retract_interval(trial))];
                     M1_GPFA_data(trial).epochColors = [0.7000,0.7000,0.7000;1,0,0;0,0,0];
-                    
+                    %Cb
                     Cb_GPFA_data(trial).condition = 'failure';
                     Cb_GPFA_data(trial).epochStarts = [1, 251, min(4001,251+Cb_reach_retract_interval(trial))];
                     Cb_GPFA_data(trial).epochColors = [0.7000,0.7000,0.7000;1,0,0;0,0,0];
@@ -6008,6 +6222,7 @@ if enabled(37)
                 end
                 M1_neuron_idx = 0;
                 Cb_neuron_idx = 0;
+                %Collect M1 spike data
                 for chan = 1:M1_chans
                     for code = 1:M1_codes
                         if ~isempty(M1_spike_timestamps{chan, code})
@@ -6017,7 +6232,7 @@ if enabled(37)
                         end
                     end
                 end
-                
+                %Collect Cb spike data
                 for chan = 1:Cb_chans
                     for code = 1:Cb_codes
                         if ~isempty(Cb_spike_timestamps{chan, code})
@@ -6039,8 +6254,9 @@ if enabled(37)
 end
 
 %% Create GPFA Neural Trajectories with DataHigh (38)
-%Create trajectories on 1st screen. 10 ms window, 1hz minimum firing rate. Default everything else.
-%Save on 2nd screen. There should be an M1 and Cb save for each day.
+% Create trajectories on 1st screen. 10 ms window, 1hz minimum firing rate. Default everything else.
+% Save on 2nd screen. There should be an M1 and Cb save for each day.
+% Analysis behind Lemke 2019 Fig 8
 
 if enabled(38)
     disp('Block 38...')
@@ -6051,11 +6267,13 @@ if enabled(38)
         
         M1_day_GPFA_data = [];
         Cb_day_GPFA_data = [];
+        %Combine block data into day data
         for block=1:param.blocks
             load ([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GPFA_data.mat'])
             M1_day_GPFA_data = cat(1, M1_day_GPFA_data, M1_GPFA_data);
             Cb_day_GPFA_data = cat(1, Cb_day_GPFA_data, Cb_GPFA_data);
         end
+        %Run DataHigh
         disp(['Day ',num2str(day)])
         DataHigh(M1_day_GPFA_data,'DimReduce')
         input('Press enter when done')
@@ -6066,7 +6284,8 @@ if enabled(38)
     clearvars -except code_rootpath rootpath origin_rootpath animal param enabled;
 end
 
-%% Calculate Mean Success Trajectory and Consistency of Each Trial From that Mean(39)
+%% Calculate Mean Success Trajectory and Consistency of Each Trial From that Mean (39)
+% Lemke 2019 Fig 8 with some things like averaging, interpolating, etc.
 
 if enabled(39)
     disp('Block 39...')
@@ -6075,11 +6294,15 @@ if enabled(39)
     M1_all_traj_corr_full = cell(param.days,3);
     Cb_all_traj_corr_full = cell(param.days,3);
     
+    %How many dimensions will be analyzed
     M1_factors = 2;
     Cb_factors = 2;
+    
     num_plot_trials = inf;
     for day = 1:param.days
         M1_day_GPFA_data = [];
+        
+        %Collect day data
         for block=1:param.blocks
             load ([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GPFA_data.mat'])
             M1_day_GPFA_data = cat(1, M1_day_GPFA_data, M1_GPFA_data);
@@ -6087,12 +6310,13 @@ if enabled(39)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals.mat']);
             reach_touch_interval(reach_touch_interval == -1) = [];
             if block == 1
-                day_reach_touch_interval = round(reach_touch_interval*100);
+                day_reach_touch_interval = round(reach_touch_interval*100); %If the instructions were followed in block 38 the bins are 10ms
             else
                 day_reach_touch_interval = cat(1,day_reach_touch_interval,round(reach_touch_interval*100));
             end
         end
         
+        %Rename dataHigh output as "D" is not an informative name
         if exist([rootpath,animal,'/Day',num2str(day),'/M1_2PC_factors.mat'],'file')
             load([rootpath,animal,'/Day',num2str(day),'/M1_2PC_factors.mat']);
             M1_traj = D;
@@ -6111,6 +6335,7 @@ if enabled(39)
             Cb_traj = repmat(Cb_traj,0,1);
         end
         
+        %Remove dimensions we don't care about
         for i = 1:length(M1_traj)
             touch_time = min(day_reach_touch_interval(i)+26,400);
             M1_traj(i).epochStarts = [M1_traj(i).epochStarts(1:2) touch_time M1_traj(i).epochStarts(3)];
@@ -6122,25 +6347,33 @@ if enabled(39)
             Cb_traj(i).data = Cb_traj(i).data(1:Cb_factors,:);
         end
         
+        %Record success/failure
         succ_bool = cellfun(@(x)(strcmp(x,'success')),{M1_day_GPFA_data.condition});
         succ_bool = repmat(succ_bool',1,3);
-        %M1_traj = M1_traj(succ_bool);
-        %Cb_traj = Cb_traj(succ_bool);
-        %Find mean and stdv trajectory length
-        %Remove trajectories that differ from mean by more than an stdv
-        %M1_traj = remove_outlier_trajectories(M1_traj, 1.0);
+        
+        % Code from when we tried removing trajectories that were outliers. Saved in case we want to try that again
+%         M1_traj = M1_traj(succ_bool);
+%         Cb_traj = Cb_traj(succ_bool);
+
+        %M1
+        % Find mean and stdv trajectory length
+        % Remove trajectories that differ from mean by more than an stdv
+%         M1_traj = remove_outlier_trajectories(M1_traj, 1.0);
+
         if ~isempty(M1_traj)
+            
             %Interpolate remaining trajectories and find mean trajectory
             M1_traj_i = interpolate_trajectories(M1_traj);
             [M1_succ_traj, M1_fail_traj] = success_fail_split(M1_traj_i,succ_bool,[],1);
-            
             M1_mean_trajectory = trajectory_mean_calc(M1_succ_traj);
+            
             %Plot the 20 trajectories that differ the least from the mean trajectory
             M1_traj_sq_errors = trajectory_error_calc(M1_traj_i, M1_mean_trajectory);
             [M1_traj_sq_errors, sort_idx] = sort(M1_traj_sq_errors);
             M1_traj_i = M1_traj_i(sort_idx);
             M1_plot_num = min(length(M1_traj_i), 20);
             M1_plots = plot_trajectories(M1_traj_i(1:M1_plot_num));
+            
             %Plot mean (red) and mean of the 20 member subset (purple)
             line(M1_mean_trajectory(2,:),M1_mean_trajectory(1,:),'Color',[1 0 0],'LineWidth',2)
             M1_mean_trajectory_2 = trajectory_mean_calc(M1_traj_i(1:M1_plot_num));
@@ -6156,6 +6389,7 @@ if enabled(39)
             M1_traj_i = M1_traj_i(sort_idx);
             M1_plot_num = min(length(M1_traj_i), 20);
             M1_plots = plot_trajectories_alt(M1_traj_i(1:M1_plot_num));
+            
             %Plot mean (red) and mean of the 20 member subset (purple)
             line(M1_mean_trajectory(2,:),M1_mean_trajectory(1,:),'Color',[1 0 0],'LineWidth',2)
             M1_mean_trajectory_2 = trajectory_mean_calc(M1_traj_i(1:M1_plot_num));
@@ -6168,6 +6402,7 @@ if enabled(39)
             %Plot Success and Failure factors separately
             [M1_succ_traj, M1_fail_traj] = success_fail_split(M1_traj,succ_bool,[],1);
             for factor_idx = 1:M1_factors
+                %Successes
                 if num_plot_trials < length(M1_succ_traj)
                     plot_trials = randperm(length(M1_succ_traj),num_plot_trials);
                 else
@@ -6175,6 +6410,7 @@ if enabled(39)
                 end
                 figure
                 for i = plot_trials
+                    %Plot Successes
                     data = M1_succ_traj(i).data(factor_idx,:);
                     epochs = M1_succ_traj(i).epochStarts;
                     line(1:epochs(2), data(1:epochs(2)),'Color', epoch_colors(1,:));
@@ -6186,6 +6422,7 @@ if enabled(39)
                 saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Factor', num2str(factor_idx), '_M1_succ.fig']);
                 close all
                 
+                %Fails
                 if num_plot_trials < length(M1_fail_traj)
                     plot_trials = randperm(length(M1_fail_traj),num_plot_trials);
                 else
@@ -6193,6 +6430,7 @@ if enabled(39)
                 end
                 figure
                 for i = plot_trials
+                    %Plot Fails
                     data = M1_fail_traj(i).data(factor_idx,:);
                     epochs = M1_fail_traj(i).epochStarts;
                     line(1:epochs(2), data(1:epochs(2)),'Color', epoch_colors(1,:));
@@ -6205,6 +6443,7 @@ if enabled(39)
                 close all
             end
             
+            %Collect data for multi_animal_analysis
             M1_all_traj_corr(day,1) = mean(M1_succ_traj_corr);
             M1_all_traj_corr(day,2) = mean(M1_fail_traj_corr);
             M1_all_traj_corr(day,3) = mean(M1_traj_corr);
@@ -6217,6 +6456,7 @@ if enabled(39)
             M1_plots = plot_trajectories(M1_traj_i);
         end
         
+        %Cb
         %Find mean and stdv trajectory length
         %Remove trajectories that differ from mean by more than an stdv
         %Cb_traj = remove_outlier_trajectories(Cb_traj, 1.0);
@@ -6258,6 +6498,7 @@ if enabled(39)
             %Plot Success and Failure factors separately
             [Cb_succ_traj, Cb_fail_traj] = success_fail_split(Cb_traj,succ_bool,[],1);
             for factor_idx = 1:Cb_factors
+                %Successes
                 if num_plot_trials < length(Cb_succ_traj)
                     plot_trials = randperm(length(Cb_succ_traj),num_plot_trials);
                 else
@@ -6265,6 +6506,7 @@ if enabled(39)
                 end
                 figure
                 for i = plot_trials
+                    %Plot Successes
                     data = Cb_succ_traj(i).data(factor_idx,:);
                     epochs = Cb_succ_traj(i).epochStarts;
                     line(1:epochs(2), data(1:epochs(2)),'Color', epoch_colors(1,:));
@@ -6276,6 +6518,7 @@ if enabled(39)
                 saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Factor', num2str(factor_idx), '_Cb_succ.fig']);
                 close all
                 
+                %Fails
                 if num_plot_trials < length(Cb_fail_traj)
                     plot_trials = randperm(length(Cb_fail_traj),num_plot_trials);
                 else
@@ -6283,6 +6526,7 @@ if enabled(39)
                 end
                 figure
                 for i = plot_trials
+                    %Plot Fails
                     data = Cb_fail_traj(i).data(factor_idx,:);
                     epochs = Cb_fail_traj(i).epochStarts;
                     line(1:epochs(2), data(1:epochs(2)),'Color', epoch_colors(1,:));
@@ -6295,6 +6539,7 @@ if enabled(39)
                 close all
             end
             
+            %Collect data for multi_animal_analysis
             Cb_all_traj_corr(day,1) = mean(Cb_succ_traj_corr);
             Cb_all_traj_corr(day,2) = mean(Cb_fail_traj_corr);
             Cb_all_traj_corr(day,3) = mean(Cb_traj_corr);
@@ -6308,6 +6553,7 @@ if enabled(39)
         end
 
     end
+    %Save data for multi_animal_analysis
     load([rootpath,animal,'/Shared_Data.mat'])
     shared_data.M1_succ_traj_corr = M1_all_traj_corr(:,1)';
     shared_data.M1_fail_traj_corr = M1_all_traj_corr(:,2)';
@@ -6329,6 +6575,7 @@ if enabled(39)
 end
 
 %% Spike Occurence to Filtered LFP Phase (40-old) (This probably won't be used again but it feels bad to delete)
+%First pass at analysis behind Lemke 2019 Fig 3a,b,c
 
 if false
     addpath('Z:\Matlab for analysis\circStat2008\sis_data\matlab code\nhp data\MATLAB files\circStat2008');
@@ -6714,16 +6961,19 @@ if false
 end
 
 %% Spike Occurence to Filtered LFP Phase (40)
+% Analysis behind Lemke 2019 Fig 3a,b,c
 
 if enabled(40)
     disp('Block 40...')
     addpath('Z:\Matlab for analysis\circStat2008\sis_data\matlab code\nhp data\MATLAB files\circStat2008');
     
+    window_start = 3.75;
+    window_end = 4.75;
+    M1_min_spikes = 8;
+    Cb_min_spikes = 4;
     edge_exp = -5:0.1:5;
     edges = exp(edge_exp);
     bin_centers = edges(1:end-1) + diff(edges)/2;
-    window_start = 3.75;
-    window_end = 4.75;
     
     %Notes: I086, M1: 16 has even better S vs F but bad D1 vs D5
     M1_channels_of_interest = [9]; %   I060: 6 I076: 15 I061: 29 I064: 28 I086: 9  I089: 2, 26 I096: 7 9 32  I107: 20 (maybe 18 or 22)                           110: N/A        122: 5
@@ -6745,10 +6995,7 @@ if enabled(40)
     if isempty(Cb_neurons_of_interest)
         Cb_neurons_of_interest = {ones(param.Cb_chans,param.Cb_neurons), ones(param.Cb_chans,param.Cb_neurons), ones(param.Cb_chans,param.Cb_neurons), ones(param.Cb_chans,param.Cb_neurons), ones(param.Cb_chans,param.Cb_neurons)};
     end
-        
-    M1_min_spikes = 8;
-    Cb_min_spikes = 4;
-    
+    %Preallocate
     spike_phase_stats = struct;
     spike_phase_stats.M1_chans = M1_channels_of_interest;
     spike_phase_stats.Cb_chans = Cb_channels_of_interest;
@@ -6766,6 +7013,7 @@ if enabled(40)
     spike_phase_stats.CbCh_CbNrn_stats_fail = cell(1,param.days);
     
     for day=1:param.days
+        %Prealllocate
         M1Ch_M1Nrn_spike_phase = cell(length(M1_channels_of_interest),param.M1_chans,param.M1_neurons);
         M1Ch_CbNrn_spike_phase = cell(length(M1_channels_of_interest),param.Cb_chans,param.Cb_neurons);
         CbCh_M1Nrn_spike_phase = cell(length(Cb_channels_of_interest),param.M1_chans,param.M1_neurons);
@@ -6793,6 +7041,7 @@ if enabled(40)
             no_reach_trials = (1:size(data,1));
             no_reach_trials = no_reach_trials(trial_codes>1);
             
+            %Remove non-reacg trials and trails with noise in either area
             all_bad_trials = union(M1_bad_trials, Cb_bad_trials);
             trial_codes(union(no_reach_trials, all_bad_trials)) = [];
             [M1_snapshots, Cb_snapshots] = get_common_good_data(M1_snapshots, Cb_snapshots, M1_bad_trials, Cb_bad_trials, 3);
@@ -6802,14 +7051,18 @@ if enabled(40)
             
             num_trials = size(M1_spike_snapshots,3);
             
+            %Collect spiketimes and extract LFP phases
+            %M1 LFP
             for lfp_chan = 1:length(M1_channels_of_interest)
                 if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Phase_Data/M1_Channel',num2str(param.M1_good_chans(M1_channels_of_interest(lfp_chan)))],'dir')
                     mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Phase_Data/M1_Channel',num2str(param.M1_good_chans(M1_channels_of_interest(lfp_chan)))]);
                 end
+                %M1 neurons
                 for s_chan = 1:param.M1_chans
                     for code = 1:param.M1_neurons
                         if M1_neurons_of_interest{day}(s_chan,code)
                             if ((length([M1_spike_snapshots{s_chan,code,:}]) / size(M1_spike_snapshots,3)) >= M1_min_spikes)
+                                %Start data arrays
                                 spike_phases = nan(1,0);
                                 spike_phases_succ = nan(1,0);
                                 spike_phases_fail = nan(1,0);
@@ -6818,6 +7071,7 @@ if enabled(40)
                                 all_phases_fail = nan(1,0);
                                 spike_num_idx = 1;
                                 for trial = 1:num_trials
+                                    %Extract window
                                     M1_spike_snapshots{s_chan,code,trial}(M1_spike_snapshots{s_chan,code,trial}<(window_start*param.M1_Fs)) = [];
                                     M1_spike_snapshots{s_chan,code,trial}(M1_spike_snapshots{s_chan,code,trial}>(window_end*param.M1_Fs)) = [];
                                     %calc phase of lfp
@@ -6850,10 +7104,12 @@ if enabled(40)
                         end
                     end
                 end
+                %Cb neurons
                 for s_chan = 1:param.Cb_chans
                     for code = 1:param.Cb_neurons
                         if Cb_neurons_of_interest{day}(s_chan,code)
                             if (length([Cb_spike_snapshots{s_chan,code,:}]) / size(Cb_spike_snapshots,3)) >= Cb_min_spikes
+                                %Start data arrays
                                 spike_phases = nan(1,0);
                                 spike_phases_succ = nan(1,0);
                                 spike_phases_fail = nan(1,0);
@@ -6862,6 +7118,7 @@ if enabled(40)
                                 all_phases_fail = nan(1,0);
                                 spike_num_idx = 1;
                                 for trial = 1:num_trials
+                                    %Extract window
                                     Cb_spike_snapshots{s_chan,code,trial}(Cb_spike_snapshots{s_chan,code,trial}<(window_start*param.Cb_Fs)) = [];
                                     Cb_spike_snapshots{s_chan,code,trial}(Cb_spike_snapshots{s_chan,code,trial}>(window_end*param.Cb_Fs)) = [];
                                     %calc phase of lfp
@@ -6894,6 +7151,7 @@ if enabled(40)
                         end
                     end
                 end
+                %Plot mean filtered M1 LFP
                 mean_filt = mean(M1_filt(M1_channels_of_interest(lfp_chan),:,:),3);
                 x = -4000:8000/(length(mean_filt)-1):4000;
                 %x = 1:length(mean_filt);
@@ -6902,6 +7160,7 @@ if enabled(40)
                 saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Phase_Data/M1_Ch', num2str(param.M1_good_chans(M1_channels_of_interest(lfp_chan))), '_mean_filtered_LFP.fig'])
                 close all
                 
+                %Extract M1 phases
                 hilbert_LFP = hilbert(mean_filt);
                 inst_phase = unwrap(angle(hilbert_LFP));%inst phase
                 radial_phase = mod(inst_phase,2*pi);
@@ -6910,14 +7169,17 @@ if enabled(40)
                 close all
             end
             
+            %Cb LFP
             for lfp_chan = 1:length(Cb_channels_of_interest)
                 if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Phase_Data/Cb_Channel',num2str(param.Cb_good_chans(Cb_channels_of_interest(lfp_chan)))],'dir')
                     mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Phase_Data/Cb_Channel',num2str(param.Cb_good_chans(Cb_channels_of_interest(lfp_chan)))]);
                 end
+                %M1 neurons
                 for s_chan = 1:param.M1_chans
                     for code = 1:param.M1_neurons
                         if M1_neurons_of_interest{day}(s_chan,code)
                             if (length([M1_spike_snapshots{s_chan,code,:}]) / size(M1_spike_snapshots,3)) >= M1_min_spikes
+                                %Start data arrays
                                 spike_phases = nan(1,0);
                                 spike_phases_succ = nan(1,0);
                                 spike_phases_fail = nan(1,0);
@@ -6926,6 +7188,7 @@ if enabled(40)
                                 all_phases_fail = nan(1,0);
                                 spike_num_idx = 1;
                                 for trial = 1:num_trials
+                                    %Extract window
                                     M1_spike_snapshots{s_chan,code,trial}(M1_spike_snapshots{s_chan,code,trial}<(window_start*param.M1_Fs)) = [];
                                     M1_spike_snapshots{s_chan,code,trial}(M1_spike_snapshots{s_chan,code,trial}>(window_end*param.M1_Fs)) = [];
                                     %calc phase of lfp
@@ -6958,10 +7221,13 @@ if enabled(40)
                         end
                     end
                 end
+                
+                %Cb neurons
                 for s_chan = 1:param.Cb_chans
                     for code = 1:param.Cb_neurons
                         if Cb_neurons_of_interest{day}(s_chan,code)
                             if ((length([Cb_spike_snapshots{s_chan,code,:}]) / size(Cb_spike_snapshots,3)) >= Cb_min_spikes) && (Cb_channels_of_interest(lfp_chan) ~= (ceil(s_chan/4)*4)-3)
+                                %Start data arrays
                                 spike_phases = nan(1,0);
                                 spike_phases_succ = nan(1,0);
                                 spike_phases_fail = nan(1,0);
@@ -6970,6 +7236,7 @@ if enabled(40)
                                 all_phases_fail = nan(1,0);
                                 spike_num_idx = 1;
                                 for trial = 1:num_trials
+                                    %Extract window
                                     Cb_spike_snapshots{s_chan,code,trial}(Cb_spike_snapshots{s_chan,code,trial}<(window_start*param.Cb_Fs)) = [];
                                     Cb_spike_snapshots{s_chan,code,trial}(Cb_spike_snapshots{s_chan,code,trial}>(window_end*param.Cb_Fs)) = [];
                                     %calc phase of lfp
@@ -7002,6 +7269,7 @@ if enabled(40)
                         end
                     end
                 end
+                %Plot mean filtered Cb LFP
                 mean_filt = mean(Cb_filt(Cb_channels_of_interest(lfp_chan),:,:),3);
                 x = -4000:8000/(length(mean_filt)-1):4000;
                 %x = 1:length(mean_filt);
@@ -7010,6 +7278,7 @@ if enabled(40)
                 saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Phase_Data/Cb_Ch', num2str(param.Cb_good_chans(Cb_channels_of_interest(lfp_chan))), '_mean_filtered_LFP.fig'])
                 close all
                 
+                %Extract Cb phases
                 hilbert_LFP = hilbert(mean_filt);
                 inst_phase = unwrap(angle(hilbert_LFP));%inst phase
                 radial_phase = mod(inst_phase,2*pi);
@@ -7019,8 +7288,10 @@ if enabled(40)
             end
         end    
     
+        %Phase non-unifomity significance testing
+        %M1 LFP
         for lfp_chan = 1:length(M1_channels_of_interest)
-            neuron_idx = 0;
+            %Preallocate
             M1_spikes_Zs = nan(param.M1_chans,param.M1_neurons);
             M1_spikes_Ps = nan(param.M1_chans,param.M1_neurons);
             Cb_spikes_Zs = nan(param.Cb_chans,param.Cb_neurons);
@@ -7033,9 +7304,13 @@ if enabled(40)
             M1_spikes_Ps_fail = nan(param.M1_chans,param.M1_neurons);
             Cb_spikes_Zs_fail = nan(param.Cb_chans,param.Cb_neurons);
             Cb_spikes_Ps_fail = nan(param.Cb_chans,param.Cb_neurons);
+            
+            %M1 neurons
+            neuron_idx = 0;
             for s_chan = 1:param.M1_chans
                 for code = 1:param.M1_neurons
                     neuron_idx = neuron_idx + 1;
+                    %Significance tests for all/successes/fails
                     if ~isempty(M1Ch_M1Nrn_spike_phase{lfp_chan,s_chan,code})
                         [M1_spikes_Ps(s_chan,code),M1_spikes_Zs(s_chan,code)] = circ_rtest(M1Ch_M1Nrn_spike_phase{lfp_chan,s_chan,code});
                     end
@@ -7047,10 +7322,13 @@ if enabled(40)
                     end
                 end
             end
+            
+            %Cb neurons
             neuron_idx = 0;
             for s_chan = 1:param.Cb_chans
                 for code = 1:param.Cb_neurons
                     neuron_idx = neuron_idx + 1;
+                    %Significance tests for all/successes/fails
                     if ~isempty(M1Ch_CbNrn_spike_phase{lfp_chan,s_chan,code})
                         [Cb_spikes_Ps(s_chan,code),Cb_spikes_Zs(s_chan,code)] = circ_rtest(M1Ch_CbNrn_spike_phase{lfp_chan,s_chan,code});
                     end
@@ -7062,6 +7340,7 @@ if enabled(40)
                     end
                 end
             end
+            %Remove missing entries
             M1_spikes_Ps(isnan(M1_spikes_Ps)) = [];
             Cb_spikes_Ps(isnan(Cb_spikes_Ps)) = [];
             M1_spikes_Zs(isnan(M1_spikes_Zs)) = [];
@@ -7074,7 +7353,7 @@ if enabled(40)
             Cb_spikes_Ps_fail(isnan(Cb_spikes_Ps_fail)) = [];
             M1_spikes_Zs_fail(isnan(M1_spikes_Zs_fail)) = [];
             Cb_spikes_Zs_fail(isnan(Cb_spikes_Zs_fail)) = [];
-            
+            %Collect data for multi_animal_analysis
             spike_phase_stats.M1Ch_M1Nrn_stats{day} = [(M1_spikes_Zs(:)'); (M1_spikes_Ps(:)')];
             spike_phase_stats.M1Ch_CbNrn_stats{day} = [(Cb_spikes_Zs(:)'); (Cb_spikes_Ps(:)')];
             spike_phase_stats.M1Ch_M1Nrn_stats_succ{day} = [(M1_spikes_Zs_succ(:)'); (M1_spikes_Ps_succ(:)')];
@@ -7082,8 +7361,10 @@ if enabled(40)
             spike_phase_stats.M1Ch_M1Nrn_stats_fail{day} = [(M1_spikes_Zs_fail(:)'); (M1_spikes_Ps_fail(:)')];
             spike_phase_stats.M1Ch_CbNrn_stats_fail{day} = [(Cb_spikes_Zs_fail(:)'); (Cb_spikes_Ps_fail(:)')];
         end
+        
+        %Cb LFP
         for lfp_chan = 1:length(Cb_channels_of_interest)
-            neuron_idx = 0;
+            %Preallocate
             M1_spikes_Zs = nan(param.M1_chans,param.M1_neurons);
             M1_spikes_Ps = nan(param.M1_chans,param.M1_neurons);
             Cb_spikes_Zs = nan(param.Cb_chans,param.Cb_neurons);
@@ -7096,9 +7377,13 @@ if enabled(40)
             M1_spikes_Ps_fail = nan(param.M1_chans,param.M1_neurons);
             Cb_spikes_Zs_fail = nan(param.Cb_chans,param.Cb_neurons);
             Cb_spikes_Ps_fail = nan(param.Cb_chans,param.Cb_neurons);
+            
+            %Cb neurons
+            neuron_idx = 0;
             for s_chan = 1:param.M1_chans
                 for code = 1:param.M1_neurons
                     neuron_idx = neuron_idx + 1;
+                    %Significance tests for all/successes/fails
                     if ~isempty(CbCh_M1Nrn_spike_phase{lfp_chan,s_chan,code})
                         [M1_spikes_Ps(s_chan,code),M1_spikes_Zs(s_chan,code)] = circ_rtest(CbCh_M1Nrn_spike_phase{lfp_chan,s_chan,code});
                     end
@@ -7110,10 +7395,13 @@ if enabled(40)
                     end
                 end
             end
+            
+            %Cb neurons
             neuron_idx = 0;
             for s_chan = 1:param.Cb_chans
                 for code = 1:param.Cb_neurons
                     neuron_idx = neuron_idx + 1;
+                    %Significance tests for all/successes/fails
                     if ~isempty(CbCh_CbNrn_spike_phase{lfp_chan,s_chan,code})
                         [Cb_spikes_Ps(s_chan,code),Cb_spikes_Zs(s_chan,code)] = circ_rtest(CbCh_CbNrn_spike_phase{lfp_chan,s_chan,code});
                     end
@@ -7125,6 +7413,7 @@ if enabled(40)
                     end
                 end
             end
+            %Remove missing entries
             M1_spikes_Ps(isnan(M1_spikes_Ps)) = [];
             Cb_spikes_Ps(isnan(Cb_spikes_Ps)) = [];
             M1_spikes_Zs(isnan(M1_spikes_Zs)) = [];
@@ -7137,7 +7426,7 @@ if enabled(40)
             Cb_spikes_Ps_fail(isnan(Cb_spikes_Ps_fail)) = [];
             M1_spikes_Zs_fail(isnan(M1_spikes_Zs_fail)) = [];
             Cb_spikes_Zs_fail(isnan(Cb_spikes_Zs_fail)) = [];
-            
+            %Collect data for multi_animal_analysis
             spike_phase_stats.CbCh_M1Nrn_stats{day} = [(M1_spikes_Zs(:)'); (M1_spikes_Ps(:)')];
             spike_phase_stats.CbCh_CbNrn_stats{day} = [(Cb_spikes_Zs(:)'); (Cb_spikes_Ps(:)')];
             spike_phase_stats.CbCh_M1Nrn_stats_succ{day} = [(M1_spikes_Zs_succ(:)'); (M1_spikes_Ps_succ(:)')];
@@ -7151,7 +7440,9 @@ if enabled(40)
     shared_data.spike_phase_data = spike_phase_stats;
     save([rootpath,animal,'/Shared_Data.mat'], 'shared_data')
     
+    %Create success vs. fail plots for each day
     for day = 1:param.days
+        %M1 LFP to M1 neurons
         if ~isempty(spike_phase_stats.M1Ch_M1Nrn_stats_fail{day})
             spike_Ps = spike_phase_stats.M1Ch_M1Nrn_stats_fail{day}(2,:);
             percent_sig_D1 = sum(spike_Ps <= 0.05)/length(spike_Ps);
@@ -7181,7 +7472,7 @@ if enabled(40)
             saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Phase_non-uniformity_cdf_M1Ch-M1Nrn_SvF', '.fig']);
             close all;
         end
-        
+        %M1 LFP to Cb neurons
         if ~isempty(spike_phase_stats.M1Ch_CbNrn_stats_fail{day})
             spike_Ps = spike_phase_stats.M1Ch_CbNrn_stats_fail{day}(2,:);
             percent_sig_D1 = sum(spike_Ps <= 0.05)/length(spike_Ps);
@@ -7211,7 +7502,7 @@ if enabled(40)
             saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Phase_non-uniformity_cdf_M1Ch-CbNrn_SvF', '.fig']);
             close all;
         end
-        
+        %Cb LFP to M1 neurons
         if ~isempty(spike_phase_stats.CbCh_M1Nrn_stats_fail{day})
             spike_Ps = spike_phase_stats.CbCh_M1Nrn_stats_fail{day}(2,:);
             percent_sig_D1 = sum(spike_Ps <= 0.05)/length(spike_Ps);
@@ -7241,7 +7532,7 @@ if enabled(40)
             saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Phase_non-uniformity_cdf_CbCh-M1Nrn_SvF', '.fig']);
             close all;
         end
-        
+        %Cb LFP to Cb neurons
         if ~isempty(spike_phase_stats.CbCh_CbNrn_stats_fail{day})
             spike_Ps = spike_phase_stats.CbCh_CbNrn_stats_fail{day}(2,:);
             percent_sig_D1 = sum(spike_Ps <= 0.05)/length(spike_Ps);
@@ -7272,7 +7563,8 @@ if enabled(40)
             close all;
         end
     end
-    
+    %Create day 1 vs. day 5 plots
+    %M1 LFP to M1 neurons
     if ~isempty(spike_phase_stats.M1Ch_M1Nrn_stats{1})
         spike_Ps = spike_phase_stats.M1Ch_M1Nrn_stats{1}(2,:);
         percent_sig_D1 = sum(spike_Ps <= 0.05)/length(spike_Ps);
@@ -7302,7 +7594,7 @@ if enabled(40)
         saveas(gcf,[rootpath,animal,'/Phase_non-uniformity_cdf_M1Ch-M1Nrn', '.fig']);
         close all;
     end
-    
+    %M1 LFP to Cb neurons
     if ~isempty(spike_phase_stats.M1Ch_CbNrn_stats{1})
         spike_Ps = spike_phase_stats.M1Ch_CbNrn_stats{1}(2,:);
         percent_sig_D1 = sum(spike_Ps <= 0.05)/length(spike_Ps);
@@ -7332,7 +7624,7 @@ if enabled(40)
         saveas(gcf,[rootpath,animal,'/Phase_non-uniformity_cdf_M1Ch-CbNrn', '.fig']);
         close all;
     end
-    
+    %Cb LFP to M1 neurons
     if ~isempty(spike_phase_stats.CbCh_M1Nrn_stats{1})
         spike_Ps = spike_phase_stats.CbCh_M1Nrn_stats{1}(2,:);
         percent_sig_D1 = sum(spike_Ps <= 0.05)/length(spike_Ps);
@@ -7362,7 +7654,7 @@ if enabled(40)
         saveas(gcf,[rootpath,animal,'/Phase_non-uniformity_cdf_CbCh-M1Nrn', '.fig']);
         close all;
     end
-    
+    %Cb LFP to Cb neurons
     if ~isempty(spike_phase_stats.CbCh_CbNrn_stats{1})
         spike_Ps = spike_phase_stats.CbCh_CbNrn_stats{1}(2,:);
         percent_sig_D1 = sum(spike_Ps <= 0.05)/length(spike_Ps);
@@ -7398,9 +7690,12 @@ if enabled(40)
 end
 
 %% M1 vs Cb Filtered LFP and Phase differences (41)
+%Create plots of the LFP phase (Lemke 2019 Fig 3b, sawtooth plot) for M1 and Cb
+%Create histograms of the phase differnce between M1 and CB
 
 if enabled(41)
     disp('Block 41...')
+    %Selected channels will be used to create single-channel plots
     M1_channels_of_interest = []; % *OPTIONAL* I060: 6 I086: 9  I089: 2, 26 I107: 20     110: N/A        122: 5
     Cb_channels_of_interest = []; % *OPTIONAL* I060: 7 I086: 57 I089: 7     I107: 28, 45 110: 38, 36, 41 122: 20
     
@@ -7426,9 +7721,9 @@ if enabled(41)
                 mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Filter_Compare']);
             end
             
+            %Split success and fail trials
             [M1_filt_succ, M1_filt_fail]  = success_fail_split(M1_1_4_snapshots,data,M1_bad_trials,3);
             [Cb_filt_succ, Cb_filt_fail]  = success_fail_split(Cb_1_4_snapshots,data,Cb_bad_trials,3);
-            
             if isempty(M1_filt_succ)
                 disp(['No succsessful trials for day ', num2str(day), ', block ', num2str(block),'.'])
                 continue
@@ -7458,8 +7753,6 @@ if enabled(41)
                 Cb_phase(Cb_i,:) = Cb_phase(Cb_i,:) - pi;
             end
             
-            %Save?
-            
             %Phase difference compare
             max_bin_centers = nan(size(M1_snapshots,1),size(Cb_snapshots,1));
             for M1_i = 1:size(M1_snapshots,1)
@@ -7483,6 +7776,7 @@ if enabled(41)
                         
                         %Single pair plots
                         if ismember(param.M1_good_chans(M1_i),M1_channels_of_interest) && ismember(param.Cb_good_chans(Cb_i),Cb_channels_of_interest)
+                            %Plot M1 and Cb filtered LFP
                             f_LFP_plot = figure;
                             hold on
                             line(plot_x_axis, M1_mean_filt_succ(M1_i,(3*round(param.M1_Fs)):(5*round(param.M1_Fs))),'Color', 'red');
@@ -7490,7 +7784,7 @@ if enabled(41)
                             hold off
                             saveas(f_LFP_plot, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Filter_Compare/M1_Channel',num2str(param.M1_good_chans(M1_i)),'_Cb_Channel',num2str(param.Cb_good_chans(Cb_i)),'_filtered_LFP', '.fig'])
                             close all
-                            
+                            %Plot M1 and Cb filtered LFP phase
                             phase_plot = figure;
                             hold on
                             line(plot_x_axis, M1_phase(M1_i,(3*round(param.M1_Fs)):(5*round(param.M1_Fs))),'Color', 'red');
@@ -7498,7 +7792,7 @@ if enabled(41)
                             hold off
                             saveas(phase_plot, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Filter_Compare/M1_Channel',num2str(param.M1_good_chans(M1_i)),'_Cb_Channel',num2str(param.Cb_good_chans(Cb_i)),'_phase', '.fig'])
                             close all
-                            
+                            %Plot histogram of phase differences between M1 and Cb
                             hist_plot = histogram(phase_diff(round(3.75*param.M1_Fs):round(4.5*param.M1_Fs)),hist_bin_edges);
                             saveas(hist_plot, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Filter_Compare/M1_Channel',num2str(param.M1_good_chans(M1_i)),'_Cb_Channel',num2str(param.Cb_good_chans(Cb_i)),'_phase_lag', '.fig'])
                             close all
@@ -7506,9 +7800,8 @@ if enabled(41)
                     end
                 end
             end
-            
-            
-            
+
+            %Plot histogram of each neuron's timebin where the hightest phase difference count occured
             max_bin_centers(isnan(max_bin_centers(:))) = [];
             max_diff_hist = histcounts(max_bin_centers,hist_bin_edges);
             max_hist_plot = histogram(max_bin_centers,hist_bin_edges);
@@ -7520,6 +7813,7 @@ if enabled(41)
 end
 
 %% Day filtered LFPs with mean overlay (42)
+% Lemke 2019 Fig 2d
 
 if enabled(42)
     disp('Block 42...')
@@ -7545,7 +7839,7 @@ if enabled(42)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Bad_trials.mat']);
-            
+            %Collect day M1 data
             good_trials = 1:(length(M1_bad_trials) + size(M1_1_4_snapshots_n,3));
             bad_trials = good_trials;
             good_trials(M1_bad_trials) = [];
@@ -7558,7 +7852,7 @@ if enabled(42)
             M1_day_reach_snapshots = cat(3, M1_day_reach_snapshots, reach_succ);
             M1_day_touch_snapshots = cat(3, M1_day_touch_snapshots, touch_succ); 
             M1_day_retract_snapshots = cat(3, M1_day_retract_snapshots, retract_succ);
-            
+            %Collect day Cb data
             good_trials = 1:(length(Cb_bad_trials) + size(Cb_1_4_snapshots_n,3));
             bad_trials = good_trials;
             good_trials(Cb_bad_trials) = [];
@@ -7571,10 +7865,9 @@ if enabled(42)
             Cb_day_reach_snapshots = cat(3, Cb_day_reach_snapshots, reach_succ); 
             Cb_day_touch_snapshots = cat(3, Cb_day_touch_snapshots, touch_succ); 
             Cb_day_retract_snapshots = cat(3, Cb_day_retract_snapshots, retract_succ); 
-            
-            
         end
             
+        %Extract LFP data centered on rech, touch, and retract
         M1_reach_filt = M1_day_reach_snapshots(M1_chan_idx, M1_plot_x, :);
         M1_touch_filt = M1_day_touch_snapshots(M1_chan_idx, M1_plot_x, :);
         M1_retract_filt = M1_day_retract_snapshots(M1_chan_idx, M1_plot_x, :);
@@ -7583,6 +7876,7 @@ if enabled(42)
         Cb_touch_filt = Cb_day_touch_snapshots(Cb_chan_idx, Cb_plot_x, :);
         Cb_retract_filt = Cb_day_retract_snapshots(Cb_chan_idx, Cb_plot_x, :);
         
+        %Save data for multi_animal_analysis
         load([rootpath,animal,'/Shared_Data.mat'])
         shared_data.M1_reach_filt_LFPs{day} = M1_day_reach_snapshots(:, M1_plot_x, :);
         shared_data.M1_touch_filt_LFPs{day} = M1_day_touch_snapshots(:, M1_plot_x, :);
@@ -7600,7 +7894,7 @@ if enabled(42)
         Cb_touch_mean = mean(Cb_touch_filt,3);
         Cb_retract_mean = mean(Cb_retract_filt,3);
         
-        %Sort trials by sq error from mean
+        %Sort trials by sq error from mean so we can cherry pick even more
         M1_sq_err = M1_reach_filt - M1_reach_mean;
         M1_sq_err = M1_sq_err .^ 2;
         M1_sq_err = sum(M1_sq_err,2);
@@ -7658,7 +7952,8 @@ if enabled(42)
 end
 
 %% Plot Power differences in Day 1&2 to Day 4&5 for behavior-matched trials (43)
-%Success-fail split causes an error since coherence calc merges all trials. Instead, cohereence needs to be recalculated on fast success trials only.
+% Success-fail split causes an error since coherence calc merges all trials. Instead, cohereence needs to be recalculated on fast success trials only.
+% Some suplemental Lemk2 2019 figure
 
 if enabled(43)
     disp('Block 43...')
@@ -7671,6 +7966,8 @@ if enabled(43)
     early_fast_coherence = [];
     late_fast_coherence = [];
     for block = 1:param.blocks
+        %Day 1
+        %Get data and split into successes and failures
         load([rootpath,animal,'/Day1/',param.block_names{block},'/ERSP_reach', '.mat']);
         load([rootpath,animal,'/Day1/',param.block_names{block},'/GUI_data.mat']);
         load([rootpath,animal,'/Day1/',param.block_names{block},'/Bad_trials.mat']);
@@ -7685,6 +7982,7 @@ if enabled(43)
         [Cb_data,~] = success_fail_split(Cb_data,Cb_data,[],1);
         [shared_data,~] = success_fail_split(shared_data_all,shared_data_all,[],1);
         
+        %Find trials that meet the length criteria
         M1_fast_idx = length_filter(M1_data, [200 400], 25);
         Cb_fast_idx = length_filter(Cb_data, [200 400], 25);
         shared_fast_idx = length_filter(shared_data, [200 400], 25);
@@ -7693,6 +7991,8 @@ if enabled(43)
         Cb_early_fast_trials = cat(4, Cb_early_fast_trials, Cb_ersp_data(:,(Cb_freqs >= min_freq) & (Cb_freqs <= max_freq),:,Cb_fast_idx));
         
         block_fast_coherence = zeros(length(param.M1_good_chans)*length(param.Cb_good_chans), 285, 4, length(shared_fast_idx));
+                
+        %Select coherence data from only fast trials
         chan_idx = 1;
         for M1_chan = param.M1_good_chans
             for Cb_chan = param.Cb_good_chans
@@ -7706,7 +8006,8 @@ if enabled(43)
         end
         early_fast_coherence = cat(4, early_fast_coherence, block_fast_coherence);
         
-        
+        %Day 2
+        %Get data and split into successes and failures
         load([rootpath,animal,'/Day2/',param.block_names{block},'/ERSP_reach', '.mat']);
         load([rootpath,animal,'/Day2/',param.block_names{block},'/GUI_data.mat']);
         load([rootpath,animal,'/Day2/',param.block_names{block},'/Bad_trials.mat']);
@@ -7721,6 +8022,7 @@ if enabled(43)
         [Cb_data,~] = success_fail_split(Cb_data,Cb_data,[],1);
         [shared_data,~] = success_fail_split(shared_data_all,shared_data_all,[],1);
         
+        %Find trials that meet the length criteria
         M1_fast_idx = length_filter(M1_data, [200 400], 25);
         Cb_fast_idx = length_filter(Cb_data, [200 400], 25);
         shared_fast_idx = length_filter(shared_data, [200 400], 25);
@@ -7729,6 +8031,8 @@ if enabled(43)
         Cb_early_fast_trials = cat(4, Cb_early_fast_trials, Cb_ersp_data(:,(Cb_freqs >= min_freq) & (Cb_freqs <= max_freq),:,Cb_fast_idx));
 
         block_fast_coherence = zeros(length(param.M1_good_chans)*length(param.Cb_good_chans), 285, 4, length(shared_fast_idx));
+        
+        %Select coherence data from only fast trials
         chan_idx = 1;
         for M1_chan = param.M1_good_chans
             for Cb_chan = param.Cb_good_chans
@@ -7742,8 +8046,8 @@ if enabled(43)
         end
         early_fast_coherence = cat(4, early_fast_coherence, block_fast_coherence);
         
-        
-        
+        %Day 4
+        %Get data and split into successes and failures
         load([rootpath,animal,'/Day4/',param.block_names{block},'/ERSP_reach', '.mat']);
         load([rootpath,animal,'/Day4/',param.block_names{block},'/GUI_data.mat']);
         load([rootpath,animal,'/Day4/',param.block_names{block},'/Bad_trials.mat']);
@@ -7758,6 +8062,7 @@ if enabled(43)
         [Cb_data,~] = success_fail_split(Cb_data,Cb_data,[],1);
         [shared_data,~] = success_fail_split(shared_data_all,shared_data_all,[],1);
         
+        %Find trials that meet the length criteria
         M1_fast_idx = length_filter(M1_data, [200 400], 25);
         Cb_fast_idx = length_filter(Cb_data, [200 400], 25);
         shared_fast_idx = length_filter(shared_data, [200 400], 25);
@@ -7766,6 +8071,8 @@ if enabled(43)
         Cb_late_fast_trials = cat(4, Cb_late_fast_trials, Cb_ersp_data(:,(Cb_freqs >= min_freq) & (Cb_freqs <= max_freq),:,Cb_fast_idx));
 
         block_fast_coherence = zeros(length(param.M1_good_chans)*length(param.Cb_good_chans), 285, 4, length(shared_fast_idx));
+        
+        %Select coherence data from only fast trials
         chan_idx = 1;
         for M1_chan = param.M1_good_chans
             for Cb_chan = param.Cb_good_chans
@@ -7779,7 +8086,8 @@ if enabled(43)
         end
         late_fast_coherence = cat(4, late_fast_coherence, block_fast_coherence);
         
-
+        %Day 5
+        %Get data and split into successes and failures
         load([rootpath,animal,'/Day5/',param.block_names{block},'/ERSP_reach', '.mat']);
         load([rootpath,animal,'/Day5/',param.block_names{block},'/GUI_data.mat']);
         load([rootpath,animal,'/Day5/',param.block_names{block},'/Bad_trials.mat']);
@@ -7794,6 +8102,7 @@ if enabled(43)
         [Cb_data,~] = success_fail_split(Cb_data,Cb_data,[],1);
         [shared_data,~] = success_fail_split(shared_data_all,shared_data_all,[],1);
         
+        %Find trials that meet the length criteria
         M1_fast_idx = length_filter(M1_data, [200 400], 25);
         Cb_fast_idx = length_filter(Cb_data, [200 400], 25);
         shared_fast_idx = length_filter(shared_data, [200 400], 25);
@@ -7802,6 +8111,8 @@ if enabled(43)
         Cb_late_fast_trials = cat(4, Cb_late_fast_trials, Cb_ersp_data(:,(Cb_freqs >= min_freq) & (Cb_freqs <= max_freq),:,Cb_fast_idx));
 
         block_fast_coherence = zeros(length(param.M1_good_chans)*length(param.Cb_good_chans), 285, 4, length(shared_fast_idx));
+        
+        %Select coherence data from only fast trials
         chan_idx = 1;
         for M1_chan = param.M1_good_chans
             for Cb_chan = param.Cb_good_chans
@@ -7853,12 +8164,14 @@ end
 if enabled(44)
     disp('Block 44...')
     
+    %There used to be some alterantive method that we tried and it worked well enough that it became the standard but the 'alt' vairiant filenames were already established so now we're stuck with it
     alt = true;
     if alt
         suff1 = '_alt';
     else
         suff1 = ''; %#ok<UNRCH>
     end
+    
     M1_channels_of_interest = [2];  %  I060: 12 I076: 15 I061: 29 I064: 28 I086: 9  I089: 2, 26
     Cb_channels_of_interest = [7]; %  I060: 8  I076: 23 I061: 20 I064: 17 I086: 57 I089: 7
     if isempty(M1_channels_of_interest)
@@ -7891,14 +8204,16 @@ if enabled(44)
         Cbch_M1nrn_day_cohs = [];
         Cbch_Cbnrn_day_cohs = [];
         disp(['Day ', num2str(day)])
+        %M1 LFP
         for lfp_chan_num = M1_channels_of_interest
             lfp_chan = find(param.M1_good_chans==lfp_chan_num);
+            
+            %M1 LFP vs M1 spikes
             neuron_idx = 0;
             for s_chan = 1:param.M1_chans
                 for code = 1:param.M1_neurons
                     neuron_idx = neuron_idx + 1;
                     for block=1:param.blocks
-                        %M1 LFP vs M1 spikes
                         if exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence',suff1,'/M1_Channel',num2str(lfp_chan_num),'/M1_Ch',num2str(s_chan),'_code',num2str(code),'_coherence_data.mat'], 'file')
                             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence',suff1,'/M1_Channel',num2str(lfp_chan_num),'/M1_Ch',num2str(s_chan),'_code',num2str(code),'_coherence_data.mat']);
                             low_spike_trials = logical(isinf(max(max(coh,[],2),[],1)) + sum(sum(isnan(coh),2),1));
@@ -7925,12 +8240,12 @@ if enabled(44)
                 end
             end
             
+            %M1 LFP vs Cb spikes
             neuron_idx = 0;
             for s_chan = 1:param.Cb_chans
                 for code = 1:param.Cb_neurons
                     neuron_idx = neuron_idx + 1;
                     for block=1:param.blocks
-                        %M1 LFP vs Cb spikes
                         if exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence',suff1,'/M1_Channel',num2str(lfp_chan_num),'/Cb_Ch',num2str(s_chan),'_code',num2str(code),'_coherence_data.mat'], 'file')
                             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence',suff1,'/M1_Channel',num2str(lfp_chan_num),'/Cb_Ch',num2str(s_chan),'_code',num2str(code),'_coherence_data.mat']);
                             low_spike_trials = logical(isinf(max(max(coh,[],2),[],1)) + sum(sum(isnan(coh),2),1));
@@ -7957,14 +8272,17 @@ if enabled(44)
                 end
             end
         end
+        
+        %Cb LFP
         for lfp_chan_num = Cb_channels_of_interest
             lfp_chan = find(param.Cb_good_chans==lfp_chan_num);
+            
+            %Cb LFP vs M1 spikes
             neuron_idx = 0;
             for s_chan = 1:param.M1_chans
                 for code = 1:param.M1_neurons
                     neuron_idx = neuron_idx + 1;
                     for block=1:param.blocks
-                        %Cb LFP vs M1 spikes
                         if exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence',suff1,'/Cb_Channel',num2str(lfp_chan_num),'/M1_Ch',num2str(s_chan),'_code',num2str(code),'_coherence_data.mat'], 'file')
                             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence',suff1,'/Cb_Channel',num2str(lfp_chan_num),'/M1_Ch',num2str(s_chan),'_code',num2str(code),'_coherence_data.mat']);
                             low_spike_trials = logical(isinf(max(max(coh,[],2),[],1)) + sum(sum(isnan(coh),2),1));
@@ -7991,12 +8309,12 @@ if enabled(44)
                 end
             end
             
+            %Cb LFP vs Cb spikes
             neuron_idx = 0;
             for s_chan = 1:param.Cb_chans
                 for code = 1:param.Cb_neurons
                     neuron_idx = neuron_idx + 1;
                     for block=1:param.blocks
-                        %Cb LFP vs Cb spikes
                         if exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence',suff1,'/Cb_Channel',num2str(lfp_chan_num),'/Cb_Ch',num2str(s_chan),'_code',num2str(code),'_coherence_data.mat'], 'file')
                             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence',suff1,'/Cb_Channel',num2str(lfp_chan_num),'/Cb_Ch',num2str(s_chan),'_code',num2str(code),'_coherence_data.mat']);
                             low_spike_trials = logical(isinf(max(max(coh,[],2),[],1)) + sum(sum(isnan(coh),2),1));
@@ -8023,6 +8341,8 @@ if enabled(44)
                 end
             end
         end
+        
+        %M1 LFP vs M1 spikes
         if isempty(M1ch_M1nrn_day_cohs)
             figure
             title(['No Data'])
@@ -8038,6 +8358,7 @@ if enabled(44)
         saveas(gcf, [rootpath,animal,'/Day',num2str(day),'/M1_Channel_M1_Neuron_coherence_heatmap.fig']);
         close all
         
+        %M1 LFP vs Cb spikes
         if isempty(M1ch_Cbnrn_day_cohs)
             figure
             title(['No Data'])
@@ -8053,6 +8374,7 @@ if enabled(44)
         saveas(gcf, [rootpath,animal,'/Day',num2str(day),'/M1_Channel_Cb_Neuron_coherence_heatmap.fig']);
         close all
         
+        %Cb LFP vs M1 spikes
         if isempty(Cbch_M1nrn_day_cohs)
             figure
             title(['No Data'])
@@ -8068,6 +8390,7 @@ if enabled(44)
         saveas(gcf, [rootpath,animal,'/Day',num2str(day),'/Cb_Channel_M1_Neuron_coherence_heatmap.fig']);
         close all
         
+        %Cb LFP vs Cb spikes
         if isempty(Cbch_Cbnrn_day_cohs)
             figure
             title(['No Data'])
@@ -8087,6 +8410,7 @@ if enabled(44)
 end
 
 %% Single channel Spike-Field Coherence Day Mean (45)
+
 if enabled(45)
     disp('Block 45...')
     M1_channel_of_interest = 6; %good: 6
@@ -8113,6 +8437,8 @@ if enabled(45)
         Cbch_M1nrn_day_cohs = [];
         Cbch_Cbnrn_day_cohs = [];
         for block = 1:param.blocks
+            
+            %Load and store coherence data
             neuron_idx = 0;
             for s_chan = 1:param.M1_chans
                 for code = 1:param.M1_neurons
@@ -8174,6 +8500,8 @@ if enabled(45)
                 end
             end
         end
+        
+        %Create and save heatmaps
         if ~isempty(M1ch_M1nrn_day_cohs)
             pcolor(coh_times,coh_freqs,mean(M1ch_M1nrn_day_cohs, 3))
             shading interp
@@ -8225,10 +8553,13 @@ if enabled(45)
 end
 
 %% Cross Correlogram (Spike-Spike) Analysis (46)
+% Lemke 2019 Fig 3e (M1 and Cb are not monosynaptically connected so this would obviously fail but Tanuj wouldn't understand that)
 
 if enabled(46)
     disp('Block 46...')
     addpath(genpath('Z:\Matlab for analysis'))
+    
+    %Parameters
     window = [-1.0 1.0]; %in seconds
     bin_size = 0.001; %in seconds
     bin_edges = window(1):bin_size:window(2);
@@ -8238,9 +8569,10 @@ if enabled(46)
     Cb_min_spike_hz = 5;
     M1_neurons_of_interest = param.M1_task_related_neurons;
     Cb_neurons_of_interest = param.Cb_task_related_neurons;
-    
+    %Preallocation
     day_trial_nums = zeros(1,param.days);
     for day = 1:param.days
+        %Preallocation
         pair_xcorrs = zeros(sum(M1_neurons_of_interest{day}(:)) * sum(Cb_neurons_of_interest{day}(:)),(length(bin_edges)*2)-3);
         
         for block = 1:param.blocks
@@ -8250,7 +8582,7 @@ if enabled(46)
             pair_idx = 0;
             for M1_chan = 1:param.M1_chans
                 for M1_code = 1:param.M1_neurons
-                    if M1_neurons_of_interest{day}(M1_chan,M1_code) %param.M1_multiphasic_neurons{day}(M1_chan,Cb_code)
+                    if M1_neurons_of_interest{day}(M1_chan,M1_code) %param.M1_multiphasic_neurons{day}(M1_chan,M1_code)
                         for Cb_chan = 1:param.Cb_chans
                             for Cb_code = 1:param.Cb_neurons
                                 if Cb_neurons_of_interest{day}(Cb_chan,Cb_code) %param.Cb_multiphasic_neurons{day}(Cb_chan,Cb_code)
@@ -8296,6 +8628,7 @@ if enabled(46)
                 end
             end
         end
+        %Find positive, negative and null lags
         pair_xcorrs = pair_xcorrs / day_trial_nums(day); %values of a magnitude >2 are "significant"
         smoothed_xcorrs = smoothdata(pair_xcorrs')';
         [max_amps, max_sig_idxs] = max(abs(smoothed_xcorrs),[],2); %add indexing to smoothed_xcorrs to only look for significant correlations at certain lags
@@ -8304,6 +8637,7 @@ if enabled(46)
         neg_lags = sum(peak_idxs < (size(pair_xcorrs,2)+1)/2);
         pos_lags = sum(peak_idxs > (size(pair_xcorrs,2)+1)/2);
         zero_lags = sum(peak_idxs == (size(pair_xcorrs,2)+1)/2);
+        %Unsued plot
 %         day_hist = day_hist/size(all_day_hists,1);
 %         norm_day_hist = norm_day_hist/size(all_day_hists,1); %#ok<NASGU>
 %         hist_stderr = std(all_day_hists,0,1)/sqrt(size(all_day_hists,1));
@@ -8370,6 +8704,8 @@ end
 if enabled(47)
     disp('Block 47...')
     addpath(genpath('Z:/Matlab for analysis/chronux_2_10/chronux/spectral_analysis'))
+    
+    %Parameters
     M1_channels_of_interest = [];
     Cb_channels_of_interest = [];
     if isempty([M1_channels_of_interest Cb_channels_of_interest])
@@ -8384,6 +8720,7 @@ if enabled(47)
         Cb_neurons_of_interest = {ones(param.Cb_chans,param.Cb_neurons), ones(param.Cb_chans,param.Cb_neurons), ones(param.Cb_chans,param.Cb_neurons), ones(param.Cb_chans,param.Cb_neurons), ones(param.Cb_chans,param.Cb_neurons)};
     end
     
+    %cohgramcpt parameters
     coh_params.Fs = param.M1_Fs;
     coh_params.fpass = [0 20];
     coh_params.tapers = [3 5];
@@ -8398,6 +8735,7 @@ if enabled(47)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/spiketrain_snapshots_full.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             
+            %Get trails that are noise free in both areas
             trial_codes = str2double(data(:,3));
             no_reach_trials = (1:size(data,1));
             no_reach_trials = no_reach_trials(trial_codes>1);
@@ -8410,18 +8748,21 @@ if enabled(47)
             if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence'],'dir')
                 mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence']);
             end
-            
+            %M1 LFP
             for M1_lfp_chan = find(ismember(param.M1_good_chans,M1_channels_of_interest))
                 if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence/M1_Channel',num2str(param.M1_good_chans(M1_lfp_chan))],'dir')
                     mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence/M1_Channel',num2str(param.M1_good_chans(M1_lfp_chan))]);
                 end
+                %M1 neurons
                 for M1_neuron_chan = 1:param.M1_chans
                     for M1_neuron_num = 1:param.M1_neurons
                         if ~isempty(M1_lfp_chan) && M1_neurons_of_interest{day}(M1_neuron_chan, M1_neuron_num)
+                            %Get data
                             M1_struct_spikes = struct('snapshot',cell(1,size(M1_spike_snapshots,3)));
                             for trial = 1:size(M1_spike_snapshots,3)
                                 M1_struct_spikes(trial).snapshot = M1_spike_snapshots{M1_neuron_chan,M1_neuron_num,trial}/param.M1_Fs;
                             end
+                            %Calculate coherence
                             [coh,phi_cmr,~,~,~,coh_times_raw,coh_freqs,~,~,~,~] = cohgramcpt(squeeze(M1_snapshots(M1_lfp_chan,:,:)),M1_struct_spikes,[1 .025],coh_params);
                             coh = permute(coh,[2,1,3]);
                             coh_times = -4000:(8000/(length(coh_times_raw)-1)):4000;
@@ -8429,13 +8770,16 @@ if enabled(47)
                         end
                     end
                 end
+                %Cb neurons
                 for Cb_neuron_chan = 1:param.Cb_chans
                     for Cb_neuron_num = 1:param.Cb_neurons
                         if ~isempty(M1_lfp_chan) && Cb_neurons_of_interest{day}(Cb_neuron_chan, Cb_neuron_num)
+                            %Get data
                             Cb_struct_spikes = struct('snapshot',cell(1,size(Cb_spike_snapshots,3)));
                             for trial = 1:size(Cb_spike_snapshots,3)
                                 Cb_struct_spikes(trial).snapshot = Cb_spike_snapshots{Cb_neuron_chan,Cb_neuron_num,trial}/param.Cb_Fs;
                             end
+                            %Calculate coherence
                             [coh,phi_cmr,~,~,~,coh_times_raw,coh_freqs,~,~,~,~] = cohgramcpt(squeeze(M1_snapshots(M1_lfp_chan,:,:)),Cb_struct_spikes,[1 .025],coh_params,param.Cb_Fs);
                             coh = permute(coh,[2,1,3]);
                             coh_times = -4000:(8000/(length(coh_times_raw)-1)):4000;
@@ -8444,17 +8788,21 @@ if enabled(47)
                     end
                 end
             end
+            %Cb LFP
             for Cb_lfp_chan = find(ismember(param.Cb_good_chans,Cb_channels_of_interest))
                 if ~exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence/Cb_Channel',num2str(param.Cb_good_chans(Cb_lfp_chan))],'dir')
                     mkdir([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Field_Coherence/Cb_Channel',num2str(param.Cb_good_chans(Cb_lfp_chan))]);
                 end
+                %M1 neurons
                 for M1_neuron_chan = 1:param.M1_chans
                     for M1_neuron_num = 1:param.M1_neurons
                         if ~isempty(Cb_lfp_chan) && M1_neurons_of_interest{day}(M1_neuron_chan, M1_neuron_num)
+                            %Get data
                             M1_struct_spikes = struct('snapshot',cell(1,size(M1_spike_snapshots,3)));
                             for trial = 1:size(M1_spike_snapshots,3)
                                 M1_struct_spikes(trial).snapshot = M1_spike_snapshots{M1_neuron_chan,M1_neuron_num,trial}/param.M1_Fs;
                             end
+                            %Calculate coherence
                             [coh,phi_cmr,~,~,~,coh_times_raw,coh_freqs,~,~,~,~] = cohgramcpt(squeeze(Cb_snapshots(Cb_lfp_chan,:,:)),M1_struct_spikes,[1 .025],coh_params,param.M1_Fs);
                             coh = permute(coh,[2,1,3]);
                             coh_times = -4000:(8000/(length(coh_times_raw)-1)):4000;
@@ -8462,13 +8810,17 @@ if enabled(47)
                         end
                     end
                 end
+                %Cb neurons
                 for Cb_neuron_chan = 1:param.Cb_chans
                     for Cb_neuron_num = 1:param.Cb_neurons
                         if ~isempty(Cb_lfp_chan) && Cb_neurons_of_interest{day}(Cb_neuron_chan, Cb_neuron_num)
+                            
+                            %Get data
                             Cb_struct_spikes = struct('snapshot',cell(1,size(Cb_spike_snapshots,3)));
                             for trial = 1:size(Cb_spike_snapshots,3)
                                 Cb_struct_spikes(trial).snapshot = Cb_spike_snapshots{Cb_neuron_chan,Cb_neuron_num,trial}/param.Cb_Fs;
                             end
+                            %Calculate coherence
                             [coh,phi_cmr,~,~,~,coh_times_raw,coh_freqs,~,~,~,~] = cohgramcpt(squeeze(Cb_snapshots(Cb_lfp_chan,:,:)),Cb_struct_spikes,[1 .025],coh_params,param.Cb_Fs);
                             coh = permute(coh,[2,1,3]);
                             coh_times = -4000:(8000/(length(coh_times_raw)-1)):4000;
@@ -8483,7 +8835,7 @@ if enabled(47)
 end
 
 %% Parallel Cohgramcpt Spike-Field Coherence (47.5)
-%(Bad: Cpt produces too many infs and NANs)
+% (Bad: Cpt produces too many infs and NANs)
 
 if false 
     if isunix  %#ok<UNRCH>
@@ -8642,9 +8994,12 @@ if false
 end
 
 %% Success vs. Fail for trajectory PCs (48)
+% More Lemke 2019 fig 8
 
 if enabled(48)
     disp('Block 48...')
+    
+    %Parameters
     factor_num = 1;
     include_preReach_epoch = true;
     include_postRetract_epoch = true;
@@ -8666,12 +9021,13 @@ if enabled(48)
         if size(D,1) == 1
             D = D';
         end
+        %Collect pellet touch information
         if include_pellet_touch
             for block = 1:param.blocks
                 load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals.mat']);
                 reach_touch_interval(reach_touch_interval == -1) = [];
                 if block == 1
-                    day_reach_touch_interval = round(reach_touch_interval*100);
+                    day_reach_touch_interval = round(reach_touch_interval*100); %If the instructions were followed in block 38 the bins are 10ms
                 else
                     day_reach_touch_interval = cat(1,day_reach_touch_interval,(reach_touch_interval*100));
                 end
@@ -8682,10 +9038,13 @@ if enabled(48)
         end
         
         D_interp = interpolate_trajectories(D);
+        %Prepare figure information
         trial_outcomes = repmat(cellfun(@strcmp,{D.condition},repmat({'success'},1,length(D)))',1,3);
         [data_success, data_failure] = success_fail_split(D_interp,trial_outcomes,[],1);
         factor_data = cell(1,length(data_success));
         progression_x_axis = -250:10:(size(D_interp(1).data,2)*10)-260; 
+        %Success
+        %Plot trajectories
         figure
         for trial = 1:length(data_success)
             time_step = (data_success(trial).T/size(data_success(trial).data,2)) * 10;
@@ -8695,11 +9054,12 @@ if enabled(48)
             line(progression_x_axis(end_points(1):end_points(2)), data_success(trial).data(factor_num,end_points(1):end_points(2)),'LineWidth',0.5, 'Color',[0.5 0.5 0.5]);
             factor_data{trial} = data_success(trial).data(factor_num,end_points(1):end_points(2));
         end
-        
+        %Truncate trajectories
         trn_factor_data = zeros(trial, min(cellfun(@length,factor_data)));
         for trial = 1:length(data_success)
             trn_factor_data(trial,:) = factor_data{trial}(1:size(trn_factor_data,2));
         end
+        %Plot
         mean_M1_succ_factor_data = mean(trn_factor_data,1);
         stdv_M1_succ_factor_data = std(trn_factor_data);
         line(progression_x_axis, mean_M1_succ_factor_data,'LineWidth',2.0, 'Color',[0 0 0]);
@@ -8717,6 +9077,8 @@ if enabled(48)
         saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/M1_success_factor_',num2str(factor_num),'.fig']);
         close all
         
+        %Success
+        %Plot trajectories
         figure
         for trial = 1:length(data_failure)
             time_step = (data_failure(trial).T/size(data_failure(trial).data,2)) * 10;
@@ -8726,11 +9088,12 @@ if enabled(48)
             line(progression_x_axis(end_points(1):end_points(2)), data_failure(trial).data(factor_num,end_points(1):end_points(2)),'LineWidth',0.5, 'Color',[0.5 0.5 0.5]);
             factor_data{trial} = data_failure(trial).data(factor_num,end_points(1):end_points(2));
         end
-        
+        %Truncate trajectories
         trn_factor_data = zeros(trial, min(cellfun(@length,factor_data)));
         for trial = 1:length(data_failure)
             trn_factor_data(trial,:) = factor_data{trial}(1:size(trn_factor_data,2));
         end
+        %Plot
         mean_M1_fail_factor_data = mean(trn_factor_data,1);
         stdv_M1_fail_factor_data = sqrt(mean((trn_factor_data - mean_M1_succ_factor_data).^2,1));
         line(progression_x_axis, mean_M1_fail_factor_data,'LineWidth',2.0, 'Color',[0 0 0]);
@@ -8748,6 +9111,7 @@ if enabled(48)
         saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/M1_failure_factor_',num2str(factor_num),'.fig']);
         close all
         
+        %Plot standard deviations
         figure
         line(progression_x_axis, stdv_M1_succ_factor_data,'LineWidth',2.0, 'Color',[0 .7 0]);
         line(progression_x_axis, stdv_M1_fail_factor_data,'LineWidth',2.0, 'Color',[.5 .5 .5]);
@@ -8858,8 +9222,9 @@ if enabled(48)
     clearvars -except code_rootpath rootpath origin_rootpath animal param enabled;
 end
 
-%% Read Reach Tracjectory **Ref Only**(49)
-
+%% Read I076 Reach Tracjectory **Ref Only**
+% This is a preliminary attempt to work with the DataHigh trajectories using that only works for I076. It was a
+% proof on concept and a starting point for the analysis proper
 if false
     disp('Block 49...')
     touch_only = true;
@@ -9064,6 +9429,7 @@ end
 
 if enabled(50)
     disp('Block 50...')
+    %Parameters
     bin_width = 25; %in miliseconds
     bin_edges = 0:bin_width:8000;
     bin_centers = (bin_width/2):bin_width:(8000-(bin_width/2));
@@ -9071,6 +9437,7 @@ if enabled(50)
     FF_window_post = 750;
     FF_bin_idxs = (bin_centers >= (4000-FF_window_pre)) & (bin_centers <= (4000+FF_window_post));
     FF_x_axis = {'Day 1 S'; 'Day 1 F'; 'Day 2 S'; 'Day 2 F'; 'Day 3 S'; 'Day 3 F'; 'Day 4 S'; 'Day 4 F'; 'Day 5 S'; 'Day 5 F'};
+    %Preallocation
     FF_M1_succ_mean = nan(1,param.days);
     FF_M1_fail_mean = nan(1,param.days);
     FF_Cb_succ_mean = nan(1,param.days);
@@ -9080,18 +9447,20 @@ if enabled(50)
     FF_M1_fail_stdv = nan(1,param.days);
     FF_Cb_succ_stdv = nan(1,param.days);
     FF_Cb_fail_stdv = nan(1,param.days);
+    
     for day=1:param.days
-        M1_neurons_of_interest = param.M1_task_related_neurons{day};
-        Cb_neurons_of_interest = param.Cb_task_related_neurons{day};
-        M1_day_succ_count = 0;
-        M1_day_fail_count = 0;
-        Cb_day_succ_count = 0;
-        Cb_day_fail_count = 0;
-        
         if ~exist([rootpath,animal,'/Day',num2str(day),'/Spike_Figures'],'dir')
             mkdir([rootpath,animal,'/Day',num2str(day),'/Spike_Figures']);
         end
         
+        M1_neurons_of_interest = param.M1_task_related_neurons{day};
+        Cb_neurons_of_interest = param.Cb_task_related_neurons{day};
+                
+        %Preallocation
+        M1_day_succ_count = 0;
+        M1_day_fail_count = 0;
+        Cb_day_succ_count = 0;
+        Cb_day_fail_count = 0;
         M1_succ_hist_sum = zeros(param.M1_chans, param.M1_neurons, length(bin_centers));
         M1_fail_hist_sum = zeros(param.M1_chans, param.M1_neurons, length(bin_centers));
         Cb_succ_hist_sum = zeros(param.Cb_chans, param.Cb_neurons, length(bin_centers));
@@ -9100,7 +9469,7 @@ if enabled(50)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/spiketrain_snapshots_full.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike_timestamps.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
-            
+            %Catagorize trials as successful or failed
             outcomes = cellfun(@str2double,data(:,3)); %Do not use bad trials from file, noisey trials don't matter just like noisey channels don't
             bad_trials = 1:size(data,1);
             bad_trials(outcomes < 2) = [];
@@ -9111,11 +9480,13 @@ if enabled(50)
             M1_fail_trials = size(M1_fails,3);
             [Cb_chans, Cb_codes, Cb_succ_trials] = size(Cb_successes);
             Cb_fail_trials = size(Cb_fails,3);
+            
             M1_day_succ_count = M1_day_succ_count + M1_succ_trials;
             M1_day_fail_count = M1_day_fail_count + M1_fail_trials;
             Cb_day_succ_count = Cb_day_succ_count + Cb_succ_trials;
             Cb_day_fail_count = Cb_day_fail_count + Cb_fail_trials;
             
+            %Create cross-trial spike histograms
             for chan = 1:M1_chans
                 for code = 1:M1_codes
                     if isempty(M1_spike_timestamps{chan, code}) || ~M1_neurons_of_interest(chan, code)
@@ -9157,13 +9528,14 @@ if enabled(50)
                 end
             end
         end
+        %convert to spikes/sec
+        M1_succ_hist_sum = M1_succ_hist_sum * (1000/(bin_width * M1_day_succ_count)); 
+        Cb_succ_hist_sum = Cb_succ_hist_sum * (1000/(bin_width * Cb_day_succ_count)); 
         
-        M1_succ_hist_sum = M1_succ_hist_sum * (1000/(bin_width * M1_day_succ_count)); %convert to spikes/sec
-        Cb_succ_hist_sum = Cb_succ_hist_sum * (1000/(bin_width * Cb_day_succ_count)); %convert to spikes/sec
+        M1_fail_hist_sum = M1_fail_hist_sum * (1000/(bin_width * M1_day_fail_count)); 
+        Cb_fail_hist_sum = Cb_fail_hist_sum * (1000/(bin_width * Cb_day_fail_count)); 
         
-        M1_fail_hist_sum = M1_fail_hist_sum * (1000/(bin_width * M1_day_fail_count)); %convert to spikes/sec
-        Cb_fail_hist_sum = Cb_fail_hist_sum * (1000/(bin_width * Cb_day_fail_count)); %convert to spikes/sec
-        
+        %Plot spike rate bar graphs and calculate fanofactor
         neuron_idx = 0;
         FF_M1_succ = nan(1,sum(sum(~(cellfun(@isempty,M1_spike_timestamps) | ~M1_neurons_of_interest),2),1));
         FF_M1_fail = nan(1,sum(sum(~(cellfun(@isempty,M1_spike_timestamps) | ~M1_neurons_of_interest),2),1));
@@ -9173,7 +9545,7 @@ if enabled(50)
                     continue
                 end
                 neuron_idx = neuron_idx+1;
-                
+                %Plot
                 bar(bin_centers, squeeze(M1_succ_hist_sum(chan, code, :)))
                 saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Spike_Figures/M1_firing_rate_channel', num2str(chan), '_cell', num2str(code), '_success.fig']);
                 close all
@@ -9190,6 +9562,7 @@ if enabled(50)
                 hold off
                 close all
                 
+                %Calculate fanofactor
                 FF_M1_succ(neuron_idx) = var(M1_succ_hist_sum(chan, code, FF_bin_idxs))/mean(M1_succ_hist_sum(chan, code, FF_bin_idxs));
                 FF_M1_fail(neuron_idx) = var(M1_fail_hist_sum(chan, code, FF_bin_idxs))/mean(M1_fail_hist_sum(chan, code, FF_bin_idxs));
             end
@@ -9204,7 +9577,7 @@ if enabled(50)
                     continue
                 end
                 neuron_idx = neuron_idx+1;
-                
+                %Plot
                 bar(bin_centers, squeeze(Cb_succ_hist_sum(chan, code, :)))
                 saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Spike_Figures/Cb_firing_rate_channel', num2str(chan), '_cell', num2str(code), '_success.fig']);
                 close all
@@ -9220,11 +9593,12 @@ if enabled(50)
                 saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Spike_Figures/Cb_firing_rate_channel', num2str(chan), '_cell', num2str(code), '_vs.tiff']);
                 hold off
                 close all
-                
+                %Calculate fanofactor
                 FF_Cb_succ(neuron_idx) = var(Cb_succ_hist_sum(chan, code, FF_bin_idxs))/mean(Cb_succ_hist_sum(chan, code, FF_bin_idxs));
                 FF_Cb_fail(neuron_idx) = var(Cb_fail_hist_sum(chan, code, FF_bin_idxs))/mean(Cb_fail_hist_sum(chan, code, FF_bin_idxs));
             end
         end
+        %Calculate mean fanofactor
         FF_M1_succ(isnan(FF_M1_succ)) = 0; %nans occur when no spikes fall within the range
         FF_M1_fail(isnan(FF_M1_fail)) = 0; %nans occur when no spikes fall within the range
         FF_Cb_succ(isnan(FF_Cb_succ)) = 0; %nans occur when no spikes fall within the range
@@ -9240,6 +9614,7 @@ if enabled(50)
         FF_Cb_succ_stdv(day) = std(FF_Cb_succ);
         FF_Cb_fail_stdv(day) = std(FF_Cb_fail);
     end
+    %Plot Fanofactors
     er = errorbar(1:2:10, FF_M1_succ_mean, FF_M1_succ_stdv, FF_M1_succ_stdv);
     er.Color = [0 0 1];                            
     er.LineStyle = 'none';
@@ -9281,6 +9656,7 @@ end
 
 if enabled(51)
     disp('Block 51...')
+    %Parameters
     bin_width = 100; %in miliseconds
     bin_edges = 0:bin_width:8000;
     bin_centers = (bin_width/2):bin_width:(8000-(bin_width/2));
@@ -9303,7 +9679,7 @@ if enabled(51)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/spiketrain_snapshots_full.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike_timestamps.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
-            
+            %Catagorize trials as successful or failed
             outcomes = cellfun(@str2double,data(:,3)); %Do not use bad trials from file, noisey trials don't matter just like noisey channels don't
             bad_trials = 1:size(data,1);
             bad_trials(outcomes < 2) = [];
@@ -9315,6 +9691,7 @@ if enabled(51)
             Cb_spikes_succ = cat(3, Cb_spikes_succ, Cb_successes);
             Cb_spikes_fail = cat(3, Cb_spikes_fail, Cb_fails);
         end
+        %Preallocation
         [M1_chans, M1_codes, M1_succ_trials] = size(M1_spikes_succ);
         M1_fail_trials = size(M1_spikes_fail,3);
         [Cb_chans, Cb_codes, Cb_succ_trials] = size(Cb_spikes_succ);
@@ -9323,11 +9700,13 @@ if enabled(51)
         M1_neuron_FF_fail = nan(M1_chans, M1_codes, length(bin_centers));
         Cb_neuron_FF_succ = nan(Cb_chans, Cb_codes, length(bin_centers));
         Cb_neuron_FF_fail = nan(Cb_chans, Cb_codes, length(bin_centers));
+        %M1
         for chan = 1:M1_chans
             for code = 1:M1_codes
                 if isempty(M1_spike_timestamps{chan, code}) || ~M1_neurons_of_interest(chan, code)
                     continue
                 end
+                %Calculate neuron success fanofactor
                 all_trials_hist = nan(M1_succ_trials, length(bin_centers));
                 for trial = 1:M1_succ_trials
                     timestamps = M1_spikes_succ{chan, code, trial} * (1000/param.M1_Fs);
@@ -9335,8 +9714,10 @@ if enabled(51)
                 end
                 bin_mean = mean(all_trials_hist, 1);
                 bin_var = var(all_trials_hist, 0, 1);
+                
                 M1_neuron_FF_succ(chan, code, :) = bin_var ./ bin_mean;
                 
+                %Calculate neuron failure fanofactor
                 all_trials_hist = nan(M1_fail_trials, length(bin_centers));
                 for trial = 1:M1_fail_trials
                     timestamps = M1_spikes_fail{chan, code, trial} * (1000/param.M1_Fs);
@@ -9344,8 +9725,10 @@ if enabled(51)
                 end
                 bin_mean = mean(all_trials_hist, 1);
                 bin_var = var(all_trials_hist, 0, 1);
+                
                 M1_neuron_FF_fail(chan, code, :) = bin_var ./ bin_mean;
                 
+                %Plot
                 hold on
                 line(bin_centers(FF_bin_idxs), squeeze(M1_neuron_FF_succ(chan, code, FF_bin_idxs)),'Color', 'Blue')
                 line(bin_centers(FF_bin_idxs), squeeze(M1_neuron_FF_fail(chan, code, FF_bin_idxs)),'Color', 'Red')%'r.', 'SizeData', 200)
@@ -9355,12 +9738,13 @@ if enabled(51)
                 close all
             end
         end
-        
+        %Cb
         for chan = 1:Cb_chans
             for code = 1:Cb_codes
                 if isempty(Cb_spike_timestamps{chan, code}) || ~Cb_neurons_of_interest(chan, code)
                     continue
                 end
+                %Calculate neuron success fanofactor
                 all_trials_hist = nan(Cb_succ_trials, length(bin_centers));
                 for trial = 1:Cb_succ_trials
                     timestamps = Cb_spikes_succ{chan, code, trial} * (1000/param.Cb_Fs);
@@ -9368,8 +9752,10 @@ if enabled(51)
                 end
                 bin_mean = mean(all_trials_hist, 1);
                 bin_var = var(all_trials_hist, 0, 1);
+                
                 Cb_neuron_FF_succ(chan, code, :) = bin_var ./ bin_mean;
                 
+                %Calculate neuron failure fanofactor
                 all_trials_hist = nan(Cb_fail_trials, length(bin_centers));
                 for trial = 1:Cb_fail_trials
                     timestamps = Cb_spikes_fail{chan, code, trial} * (1000/param.Cb_Fs);
@@ -9377,8 +9763,10 @@ if enabled(51)
                 end
                 bin_mean = mean(all_trials_hist, 1);
                 bin_var = var(all_trials_hist, 0, 1);
+                
                 Cb_neuron_FF_fail(chan, code, :) = bin_var ./ bin_mean;
                 
+                %Plot
                 hold on
                 line(bin_centers(FF_bin_idxs), squeeze(Cb_neuron_FF_succ(chan, code, FF_bin_idxs)),'Color', 'Blue')
                 line(bin_centers(FF_bin_idxs), squeeze(Cb_neuron_FF_fail(chan, code, FF_bin_idxs)),'Color', 'Red')
@@ -9389,7 +9777,7 @@ if enabled(51)
             end
         end
         
-        
+        %Calculate fanofacot means
         M1_mean_FF_succ = nan(1, sum(FF_bin_idxs));
         M1_mean_FF_fail = nan(1, sum(FF_bin_idxs));
         Cb_mean_FF_succ = nan(1, sum(FF_bin_idxs));
@@ -9409,6 +9797,7 @@ if enabled(51)
             %standard deviations go here
         end
         
+        %Plot means
         hold on
         line(bin_centers(FF_bin_idxs), M1_mean_FF_succ,'Color', 'Blue')
         line(bin_centers(FF_bin_idxs), M1_mean_FF_fail,'Color', 'Red')
@@ -9427,6 +9816,7 @@ if enabled(51)
 end
 
 %% Day 5 Success vs Fail Spike Occurence to Filtered LFP Phase (52) !!Obsolete, now built into (40)!!
+%This analysis had so many steps in common with 40 that it was eventually added to it making this block obsolete
 
 if false
     addpath('Z:\Matlab for analysis\circStat2008\sis_data\matlab code\nhp data\MATLAB files\circStat2008'); %#ok<UNRCH>
@@ -9994,6 +10384,7 @@ end
 if enabled(53)
     disp('Block 53...')
     addpath(genpath('Z:\Matlab for analysis\BARS'))
+    %Parameters
     mod_bin_size = 25; %In miliseconds
     mod_pre_win = 1000; %in miliseconds
     mod_post_win = 1500; %in miliseconds
@@ -10017,6 +10408,7 @@ if enabled(53)
     bp.use_logspline = 0;
     
     for day=1:param.days
+        %Preallocation
         M1_spikes = cell(param.M1_chans, param.M1_neurons, 0);
         Cb_spikes = cell(param.Cb_chans, param.Cb_neurons, 0);
         M1_spikes_succ = cell(param.M1_chans, param.M1_neurons, 0);
@@ -10027,7 +10419,7 @@ if enabled(53)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/spiketrain_snapshots_full.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike_timestamps.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
-            
+            %Collect data and split into success and fail
             outcomes = cellfun(@str2double,data(:,3)); %Do not use bad trials from file, noisey trials don't matter just like noisey channels don't
             bad_trials = 1:size(data,1);
             bad_trials(outcomes < 2) = [];
@@ -10044,13 +10436,14 @@ if enabled(53)
         
         M1_neurons_of_interest = param.M1_task_related_neurons{day} & sum(~cellfun(@isempty,M1_spikes), 3);
         Cb_neurons_of_interest = param.Cb_task_related_neurons{day} & sum(~cellfun(@isempty,Cb_spikes), 3);
-        
+        %Preallocation
         M1_succ_trials = size(M1_spikes_succ,3);
         M1_fail_trials = size(M1_spikes_fail,3);
         Cb_succ_trials = size(Cb_spikes_succ,3);
         Cb_fail_trials = size(Cb_spikes_fail,3);
         
         load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{1},'/Spike_timestamps.mat']);
+        %M1
         M1_day_hist = nan(sum(M1_neurons_of_interest(:)), length(mod_all_bin_centers));
         M1_day_hist_smooth = nan(sum(M1_neurons_of_interest(:)), length(mod_all_bin_centers));
         neuron_id = 1;
@@ -10060,7 +10453,7 @@ if enabled(53)
                 if isempty(M1_spike_timestamps{chan, code}) || ~M1_neurons_of_interest(chan, code)
                     continue
                 end
-                
+                %Create smoothed histograms
                 neuron_2D_idx(neuron_id,:) = [chan, code];
                 M1_day_hist(neuron_id,:) = histcounts([M1_spikes{chan, code, :}], mod_all_bin_edges);
                 ss_fit = fit((1:length(M1_day_hist(neuron_id,:)))', M1_day_hist(neuron_id,:)', 'smoothingspline', 'SmoothingParam', param.smoothing_param);
@@ -10068,7 +10461,7 @@ if enabled(53)
                 neuron_id = neuron_id+1;
             end
         end
-        
+        %Find time of greatest modulation
         data_mean = mean(M1_day_hist_smooth(:,zs_subset),2);
         data_std = std(M1_day_hist_smooth(:,zs_subset),0,2);
         M1_zs_data = (M1_day_hist_smooth - data_mean)./data_std;
@@ -10083,6 +10476,7 @@ if enabled(53)
         M1_neuron_FF_succ = nan(param.M1_chans, param.M1_neurons, length(FF_bin_centers));
         M1_neuron_FF_fail = nan(param.M1_chans, param.M1_neurons, length(FF_bin_centers));
         for neuron = 1:length(mod_vals)
+            %Create histograms centered on mod point
             mod_idx = find(M1_zs_mod_win(neuron,:) == mod_vals(neuron));
             mod_time = mod_win_bin_centers(mod_idx);
             M1_day_hist(neuron,:) = histcounts([M1_spikes{neuron_2D_idx(neuron,1), neuron_2D_idx(neuron,2), :}], mod_all_bin_edges);
@@ -10105,7 +10499,7 @@ if enabled(53)
             bin_mean = mean(all_trials_hist, 1);
             bin_var = var(all_trials_hist, 0, 1);
             M1_neuron_FF_fail(neuron_2D_idx(neuron,1), neuron_2D_idx(neuron,2), :) = bin_var ./ bin_mean;
-            
+            %Plot
             hold on
             line(FF_bin_centers, squeeze(M1_neuron_FF_succ(neuron_2D_idx(neuron,1), neuron_2D_idx(neuron,2), :)),'Color', 'Blue')
             line(FF_bin_centers, squeeze(M1_neuron_FF_fail(neuron_2D_idx(neuron,1), neuron_2D_idx(neuron,2), :)),'Color', 'Red')%'r.', 'SizeData', 200)
@@ -10115,6 +10509,7 @@ if enabled(53)
             close all
         end
         
+        %Cb
         Cb_day_hist = nan(sum(Cb_neurons_of_interest(:)), length(mod_all_bin_centers));
         Cb_day_hist_smooth = nan(sum(Cb_neurons_of_interest(:)), length(mod_all_bin_centers));
         neuron_id = 0;
@@ -10124,6 +10519,7 @@ if enabled(53)
                 if isempty(Cb_spike_timestamps{chan, code}) || ~Cb_neurons_of_interest(chan, code)
                     continue
                 end
+                %Create smoothed histograms
                 neuron_id = neuron_id+1;
                 neuron_2D_idx(neuron_id,:) = [chan, code];
                 Cb_day_hist(neuron_id,:) = histcounts([Cb_spikes{chan, code, :}], mod_all_bin_edges);
@@ -10131,7 +10527,7 @@ if enabled(53)
                 Cb_day_hist_smooth(neuron_id,:) = ss_fit(1:length(Cb_day_hist(neuron_id,:)))';
             end
         end
-        
+        %Find time of greatest modulation
         data_mean = mean(Cb_day_hist_smooth(:,zs_subset),2);
         data_std = std(Cb_day_hist_smooth(:,zs_subset),0,2);
         Cb_zs_data = (Cb_day_hist_smooth - data_mean)./data_std;
@@ -10146,6 +10542,7 @@ if enabled(53)
         Cb_neuron_FF_succ = nan(param.Cb_chans, param.Cb_neurons, length(FF_bin_centers));
         Cb_neuron_FF_fail = nan(param.Cb_chans, param.Cb_neurons, length(FF_bin_centers));
         for neuron = 1:length(mod_vals)
+            %Create histograms centered on mod point
             mod_idx = find(Cb_zs_mod_win(neuron,:) == mod_vals(neuron));
             mod_time = mod_win_bin_centers(mod_idx);
             Cb_day_hist(neuron,:) = histcounts([Cb_spikes{neuron_2D_idx(neuron,1), neuron_2D_idx(neuron,2), :}], mod_all_bin_edges);
@@ -10168,7 +10565,7 @@ if enabled(53)
             bin_mean = mean(all_trials_hist, 1);
             bin_var = var(all_trials_hist, 0, 1);
             Cb_neuron_FF_fail(neuron_2D_idx(neuron,1), neuron_2D_idx(neuron,2), :) = bin_var ./ bin_mean;
-            
+            %Plot
             hold on
             line(FF_bin_centers, squeeze(Cb_neuron_FF_succ(neuron_2D_idx(neuron,1), neuron_2D_idx(neuron,2), :)),'Color', 'Blue')
             line(FF_bin_centers, squeeze(Cb_neuron_FF_fail(neuron_2D_idx(neuron,1), neuron_2D_idx(neuron,2), :)),'Color', 'Red')%'r.', 'SizeData', 200)
@@ -10177,7 +10574,7 @@ if enabled(53)
             hold off
             close all
         end
-        
+        %Calculate means
         M1_mean_FF_succ = nan(1, length(FF_bin_centers));
         M1_mean_FF_fail = nan(1, length(FF_bin_centers));
         Cb_mean_FF_succ = nan(1, length(FF_bin_centers));
@@ -10192,9 +10589,9 @@ if enabled(53)
             bin_data = Cb_neuron_FF_fail(:,:,bin);
             Cb_mean_FF_fail(bin) = nanmean(bin_data(:));
             
-            %standard deviations go here
+            %standard deviations go here if they're ever needed
         end
-        
+        %Plot means
         hold on
         line(FF_bin_centers, M1_mean_FF_succ,'Color', 'Blue')
         line(FF_bin_centers, M1_mean_FF_fail,'Color', 'Red')
@@ -10215,13 +10612,14 @@ if enabled(53)
 end
 
 %% Collect Reach Trajectory Data (54)    Ref: 49
+% Data collection for Lemke Fig 1b inset
 
 if enabled(54)
     disp('Block 54...')
     traj_prefer = 'DLC';
+    %Does the trajectory data come from the reach marking GUI or from DeepLabCut
     param.traj_DLC = false;
     param.traj_GUI = false;
-    
     if exist([origin_rootpath,animal,'/DLC_Data'],'dir') && strcmp(traj_prefer, 'DLC')
         param.traj_DLC = true;
     else
@@ -10236,13 +10634,14 @@ if enabled(54)
                 trajectory_data = repmat(trajectory_data,size(data,1));
             else
                 trajectory_data(size(data,1)) = struct('x_coor', [], 'y_coor', []); 
+                %DLC procedure
                 if param.traj_DLC
                     %Get all excel filenames
                     fileNames = dir([origin_rootpath,animal,'\DLC_Data\Day',num2str(day),'\*.csv']);
                     trial_data = cell(1,size(data,1));
                     for entry_num = 1:length(fileNames)
                         name = fileNames(entry_num).name;
-                        %for each extract %s1 and %s2 from D[day]R[%s1] ... -[%s2]DLC
+                        %extract camera number from file name
                         idx1 = strfind(name,'(');
                         idx1 = idx1(1);
                         file_block = name(3+length(animal)+length(num2str(day)):idx1-2);
@@ -10268,6 +10667,7 @@ if enabled(54)
                                 good_cam = false;
                             end
                         end
+                        %extract trial number from file name
                         idx2 = strfind(name,'DLC');
                         trial = name(idx1+3:idx2-1);
                         trial = str2double(trial);
@@ -10284,6 +10684,7 @@ if enabled(54)
                         if strcmp(data(trial,1),'1')
                             sub_block = sub_block+1;
                         end
+                        % In case we become interested in sub-movements 
 %                         frame_nums = str2num(data{trial,2}); %#ok<ST2NM>
 %                         if isempty(frame_nums)
 %                             reach_frame = -1;
@@ -10309,6 +10710,7 @@ if enabled(54)
                         trajectory_data(trial).y_coor = trial_data{sub_block,str2double(data{trial,1})}(:,2); %reach_frame:retract_frame
                         trajectory_data(trial).likelihood = trial_data{sub_block,str2double(data{trial,1})}(:,3); %reach_frame:retract_frame
                     end
+                %GUI procedure
                 elseif param.traj_GUI
                     for trial = 1:size(data,1)
                         coors = data{trial,4};
@@ -10327,11 +10729,13 @@ if enabled(54)
 end
 
 %% Composite Reach Trajectory Plot (55)
+% Lemke Fig 1b inset
 
 if enabled(55)
     disp('Block 55...')
     
     for day = 1:param.days
+        %Preallocation
         day_x_pos = cell(1,0);
         day_y_pos = cell(1,0);
         day_x_pos_t = cell(1,0);
@@ -10346,7 +10750,7 @@ if enabled(55)
             for i = 1:length(trajectory_data)
                 if ~isempty(trajectory_data(i).x_coor)
                     j=j+1;
-                    
+                    %Get times
                     frames = str2num(data{i,2}); %#ok<ST2NM>
                     if frames(end) == 1
                         touch_frame(j) = frames(end-3) - frames(end-4); %#ok<SAGROW>
@@ -10364,6 +10768,7 @@ if enabled(55)
                 end
             end
         end
+        %Plot
         figure
         hold on
         for i = 1:length(day_x_pos)
@@ -10386,6 +10791,7 @@ if enabled(55)
 end
 
 %% Reach Trajectory Velocity Profiles (56)
+% Lemke 2021 Fig 1d
 
 if enabled(56)
     disp('Block 56...')
@@ -10403,9 +10809,11 @@ if enabled(56)
             for i = 1:length(trajectory_data)
                 if ~isempty(trajectory_data(i).x_coor)
                     j=j+1;
+                    %Calculate velocity (position change per frame)
                     day_x_vels_cell{j} = diff(trajectory_data(i).x_coor) * param.Camera_framerate;
                     day_y_vels_cell{j} = diff(trajectory_data(i).y_coor) * param.Camera_framerate;
                     
+                    %Get times
                     frames = str2num(data{i,2}); %#ok<ST2NM>
                     if frames(end) == 1
                         touch_frame(j) = frames(end-3) - frames(end-4); %#ok<SAGROW>
@@ -10415,19 +10823,23 @@ if enabled(56)
                 end
             end
         end
+        %Preallocation
         pre_frames = max(touch_frame);
         post_frames = max(cellfun(@length, day_x_vels_cell) - touch_frame)+1;
         day_x_vels = zeros(length(day_x_vels_cell), pre_frames + post_frames);
         day_y_vels = zeros(length(day_x_vels_cell), pre_frames + post_frames);
         day_times = ((0.5-pre_frames):(post_frames-0.5)) * (1/param.Camera_framerate);
+        %%Collect
         for i = 1:length(day_x_vels_cell)
             day_x_vels(i,pre_frames+1 - touch_frame(i):pre_frames+length(day_x_vels_cell{i})-touch_frame(i)) = day_x_vels_cell{i};
             day_y_vels(i,pre_frames+1 - touch_frame(i):pre_frames+length(day_x_vels_cell{i})-touch_frame(i)) = day_y_vels_cell{i};
         end
+        %Mean
         day_means{day,1} = mean(day_x_vels,1);
         day_means{day,2} = mean(day_y_vels,1);
         day_means{day,3} = day_times;
     end
+    %Plot
     color_grad = [[0:1/(param.days-1):1]', zeros(param.days,1), [1:-1/(param.days-1):0]'];
     figure
     for day = 1:param.days
@@ -10447,6 +10859,7 @@ if enabled(56)
 end
 
 %% Reach Trajectory Correlation (57)
+% Lemke 2021 Fig 1e
 
 if enabled(57)
     disp('Block 57...')
@@ -10473,12 +10886,13 @@ if enabled(57)
             for i = 1:length(trajectory_data)
                 if ~isempty(trajectory_data(i).x_coor)
                     j=j+1;
+                    %Get possitions
                     day_x_coor_cell{j} = trajectory_data(i).x_coor;
                     day_y_coor_cell{j} = trajectory_data(i).y_coor;
-                    
+                    %Get velocities
                     day_x_vels_cell{j} = diff(trajectory_data(i).x_coor) * param.Camera_framerate;
                     day_y_vels_cell{j} = diff(trajectory_data(i).y_coor) * param.Camera_framerate;
-                    
+                    %Get times
                     frames = str2num(data{i,2}); %#ok<ST2NM>
                     if frames(end) == 1
                         touch_frame(j) = 1 + frames(end-3) - frames(end-4); %#ok<SAGROW>
@@ -10488,7 +10902,7 @@ if enabled(57)
                 end
             end
         end
-        
+        %Use possition or velocity
         if strcmp(data_to_use,'coordinates')
             day_x_data_cell = day_x_coor_cell;
             day_y_data_cell = day_y_coor_cell;
@@ -10499,7 +10913,7 @@ if enabled(57)
         else
             error('Error: Unrecognised data source')
         end
-        
+        %Organize data
         max_pre_touch = max(touch_frame);
         max_post_touch = max(cellfun(@length,day_x_data_cell) - touch_frame);
         
@@ -10508,7 +10922,7 @@ if enabled(57)
         
         final_pre_vals = 1:(1/(max_pre_touch-1)):2;
         final_post_vals = 2:(1/max_post_touch):3;
-        
+        %Interpolate to same length
         for i = 1:length(day_x_data_cell)
             init_pre_vals = 1:(1/(touch_frame(i)-1)):2;
             init_post_vals = 2:(1/(length(day_x_data_cell{i})-touch_frame(i))):3;
@@ -10519,12 +10933,13 @@ if enabled(57)
             day_y_data(i,1:max_pre_touch) = interp1(init_pre_vals,day_y_data_cell{i}(1:touch_frame(i)),final_pre_vals);
             day_y_data(i,max_pre_touch:end) = interp1(init_post_vals,day_y_data_cell{i}(touch_frame(i):end),final_post_vals);
         end
+        %Calculate means
         day_x_mean = mean(day_x_data,1);
         day_y_mean = mean(day_y_data,1);
         
         day_x_corrs = corr(day_x_data', day_x_mean');
         day_y_corrs = corr(day_y_data', day_y_mean');
-        
+        %Save
         shared_data.x_trajectory_consistency(day) = mean(day_x_corrs);
         shared_data.y_trajectory_consistency(day) = mean(day_y_corrs);
     end
@@ -10536,6 +10951,7 @@ end
 
 if enabled(58)
     disp('Block 58...')
+    %Parameters
     RtG_dur_threshold = inf;
     spikes_per_trial_threshold = 1;
     bin_width = 0.02; %in seconds
@@ -10562,13 +10978,14 @@ if enabled(58)
     shared_data.M1_neuron_activity_template_correlation = cell(1,param.days);
     shared_data.Cb_neuron_activity_template_correlation = cell(1,param.days);
     for day = 1:param.days
+        %Preallocation
         M1_all_trial_activity = nan(length(edges(edges >= analysis_window(1) & edges < analysis_window(2))),sum(M1_neurons_of_interest{day}(:)),0);
         Cb_all_trial_activity = nan(length(edges(edges >= analysis_window(1) & edges < analysis_window(2))),sum(Cb_neurons_of_interest{day}(:)),0);
         for block = 1:param.blocks
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/spiketrain_snapshots_full.mat']);
-            
+            %Get good trials
             outcomes = cellfun(@str2double,data(:,3)); %Do not use bad trials from file, noisey trials don't matter just like noisey channels don't
             bad_trials = 1:size(data,1);
             bad_trials(outcomes < 2) = [];
@@ -10576,6 +10993,7 @@ if enabled(58)
             M1_succ_spiketimes = M1_spike_snapshots_full;%[M1_succ_spiketimes, ~] = success_fail_split(M1_spike_snapshots_full, data, bad_trials, 3);
             Cb_succ_spiketimes = Cb_spike_snapshots_full;%[Cb_succ_spiketimes, ~] = success_fail_split(Cb_spike_snapshots_full, data, bad_trials, 3);
             
+            %M1
             trial_num = 1:size(data,1);
             trial_num(bad_trials) = [];
             %[trial_num, ~] = success_fail_split(trial_num, data, bad_trials, 2);
@@ -10584,11 +11002,12 @@ if enabled(58)
                     trial_data = nan(length(edges(edges >= analysis_window(1) & edges < analysis_window(2))),length(M1_neurons_of_interest{day}(:)));
                     for neuron = 1:length(M1_neurons_of_interest{day}(:))
                         if M1_neurons_of_interest{day}(neuron)
+                            %Get trial spikes
                             spike_times = M1_succ_spiketimes(:,:,trial);
                             spike_times = (spike_times{neuron}/param.M1_Fs) - 4;
                             spike_hist = histcounts(spike_times,edges);
                             smoothed_spike_rate = conv(spike_hist,gauss_kernel,'same');
-                            
+                            %Calculate smoothed and normalized spike rate
                             bl_data_bool = edges >= baseline_window(1) & edges < baseline_window(2);
                             bl_spike_rate = smoothed_spike_rate(bl_data_bool(1:end-1));
                             if length(spike_times) < spikes_per_trial_threshold  %Problematic: day 1, trial 7, neuron 3 (46)
@@ -10606,6 +11025,7 @@ if enabled(58)
                 end
             end
             
+            %Cb
             trial_num = 1:size(data,1);
             trial_num(bad_trials) = [];
             %[trial_num, ~] = success_fail_split(trial_num, data, bad_trials, 2);
@@ -10614,11 +11034,12 @@ if enabled(58)
                     trial_data = nan(length(edges(edges >= analysis_window(1) & edges < analysis_window(2))),length(Cb_neurons_of_interest{day}(:)));
                     for neuron = 1:length(Cb_neurons_of_interest{day}(:))
                         if Cb_neurons_of_interest{day}(neuron)
+                            %Get trial spikes
                             spike_times = Cb_succ_spiketimes(:,:,trial);
                             spike_times = (spike_times{neuron}/param.Cb_Fs) - 4;
                             spike_hist = histcounts(spike_times,edges);
                             smoothed_spike_rate = conv(spike_hist,gauss_kernel,'same');
-                            
+                            %Calculate smoothed and normalized spike rate
                             bl_data_bool = edges >= baseline_window(1) & edges < baseline_window(2);
                             bl_spike_rate = smoothed_spike_rate(bl_data_bool(1:end-1));
                             if length(spike_times) < spikes_per_trial_threshold
@@ -10638,13 +11059,15 @@ if enabled(58)
         
         M1_all_trial_activity(:,sum(sum(M1_all_trial_activity,3),1)==0,:) = [];
         Cb_all_trial_activity(:,sum(sum(Cb_all_trial_activity,3),1)==0,:) = [];
-        
+        %M1
+        %Organize data
         M1_template = mean(M1_all_trial_activity,3);
         [~,max_idx] = max(M1_template,[],1);
         [~, sort_idx] = sort(max_idx);
         M1_template = M1_template(:,sort_idx);
         M1_all_trial_activity = M1_all_trial_activity(:,sort_idx,:);
         M1_activity_corrs = nan(1,size(M1_all_trial_activity,3));
+        %Calculate correlation
         for t = 1:size(M1_all_trial_activity,3)
             activity_corr = corrcoef(M1_all_trial_activity(:,:,t),M1_template);
             if isnan(activity_corr(1,2))
@@ -10653,13 +11076,15 @@ if enabled(58)
                 M1_activity_corrs(t) = activity_corr(1,2);
             end
         end
-        
+        %Cb
+        %Organize data
         Cb_template = mean(Cb_all_trial_activity,3);
         [~,max_idx] = max(Cb_template,[],1);
         [~, sort_idx] = sort(max_idx);
         Cb_template = Cb_template(:,sort_idx);
         Cb_all_trial_activity = Cb_all_trial_activity(:,sort_idx,:);
         Cb_activity_corrs = nan(1,size(Cb_all_trial_activity,3));
+        %Calculate correlation
         for t = 1:size(Cb_all_trial_activity,3)
             activity_corr = corrcoef(Cb_all_trial_activity(:,:,t),Cb_template);
             if isnan(activity_corr(1,2))
@@ -10670,7 +11095,7 @@ if enabled(58)
         end
         shared_data.M1_neuron_activity_template_correlation{day} = M1_activity_corrs;
         shared_data.Cb_neuron_activity_template_correlation{day} = Cb_activity_corrs;
-        
+        %Plot M1
         M1_template = M1_template';
         figure
         if size(M1_template,1) > 1
@@ -10698,7 +11123,7 @@ if enabled(58)
         saveas(gcf, [rootpath,animal,'/Day',num2str(day),'/M1_best_template_match.fig']);
         close all;
         
-        
+        %Plot Cb
         Cb_template = Cb_template';
         figure
         if size(Cb_template,1) > 1
@@ -10770,7 +11195,7 @@ if enabled(59)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/GUI_data.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Bad_trials.mat']);
-            
+            %Identify bad trials
             M1_snapshots = M1_snapshots_n(M1_chan,:,:);
             Cb_snapshots = Cb_snapshots_n(Cb_chan,:,:);
             M1_1_4_snapshots = M1_1_4_snapshots_n(M1_chan,:,:);
@@ -10781,7 +11206,7 @@ if enabled(59)
             common_good_trials = 1:size(data,1);
             common_good_trials(common_bad_trials) = [];
             main_trial_num = 1:(size(M1_snapshots,3));
-            
+            %Split success trials and failure trials
             [M1_succ_snapshots, M1_fail_snapshots] = success_fail_split(M1_snapshots, data, common_bad_trials, 3);
             [Cb_succ_snapshots, Cb_fail_snapshots] = success_fail_split(Cb_snapshots, data, common_bad_trials, 3);
             [M1_succ_filt, M1_fail_filt] = success_fail_split(M1_1_4_snapshots, data, common_bad_trials, 3);
@@ -10790,18 +11215,18 @@ if enabled(59)
             
             M1_time_course = (0:(size(M1_snapshots,2)-1)) - (4 * param.M1_Fs);
             Cb_time_course = (0:(size(Cb_snapshots,2)-1)) - (4 * param.Cb_Fs);
-            
+            %Get touch and retract times
             M1_reach_touch_interval = reach_touch_interval;
             M1_reach_retract_interval = reach_retract_interval;
             Cb_reach_touch_interval = reach_touch_interval;
             Cb_reach_retract_interval = reach_retract_interval;
-            
+            %Remove bad trials
             M1_reach_touch_interval(common_bad_trials) = [];
             M1_reach_retract_interval(common_bad_trials) = [];
             Cb_reach_touch_interval(common_bad_trials) = [];
             Cb_reach_retract_interval(common_bad_trials) = [];
             
-            
+            %%Split touch and retract times into successes and failures
             [M1_reach_touch_interval_succ, ~] = success_fail_split(M1_reach_touch_interval, data, common_bad_trials, 1);
             [M1_reach_retract_interval_succ, ~] = success_fail_split(M1_reach_retract_interval, data, common_bad_trials, 1);
             [Cb_reach_touch_interval_succ, ~] = success_fail_split(Cb_reach_touch_interval, data, common_bad_trials, 1);
@@ -10813,6 +11238,7 @@ if enabled(59)
             if isempty(M1_succ_snapshots)
                 disp(['Day: ', num2str(day), ', Block: ', num2str(block), ' - No successful M1 trials'])
             else
+                %Unused version
 %                 figure
 %                 for i = 1:size(M1_succ_snapshots,3)
 %                     subplot(5,ceil(size(M1_succ_snapshots,3)/5),i);
@@ -10842,7 +11268,8 @@ if enabled(59)
 %                 end
 %                 saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/',block_names{block},'/Cb_All_success_Trials_LFP', '.fig']);
 %                 close all;
-                
+
+                %Plot up to 20 trial LFPs
                 for i1 = 0:20:size(M1_succ_snapshots,3)-1
                     figure
                     for i2 = 1:min(20,size(M1_succ_snapshots,3)-i1)
@@ -10871,7 +11298,7 @@ if enabled(59)
                     saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/All_success_Trials_single_Chan_compare',num2str((i1/20)+1), '.fig']);
                     close all;
                 end
-                
+                %Plot Specific trial M1 LFP
                 for true_trial_num = M1_trials_of_interest{day,block}
                     trial = find(common_good_trials == true_trial_num);
                     succ_trial = find(succ_main_trial_num == trial);
@@ -10888,7 +11315,7 @@ if enabled(59)
                     saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/M1_channel_', num2str(M1_channel_of_interest), '_Trial_',num2str(true_trial_num),'_LFP', '.fig']);
                     close all;
                 end
-                
+                %Plot Specific trial Cb LFP
                 for true_trial_num = Cb_trials_of_interest{day,block}
                     trial = find(common_good_trials == true_trial_num);
                     succ_trial = find(succ_main_trial_num == trial);
@@ -10924,6 +11351,8 @@ if enabled(60)
     hist_window = [-.25 .75];
     edges = hist_window(1):bin_width:hist_window(2);
     
+    day_neurons_minimum = 6;
+    
     load([rootpath,animal,'/Shared_Data.mat'])
     shared_data.canonical_coor = nan(1, param.days);
     shared_data.M1_subspace_activity = cell(1, param.days);
@@ -10936,7 +11365,7 @@ if enabled(60)
         M1_neurons_of_interest{day} = M1_neurons_of_interest{day} & param.M1_task_related_neurons{day};
         Cb_neurons_of_interest{day} = Cb_neurons_of_interest{day} & param.Cb_task_related_neurons{day};
         
-        if sum(M1_neurons_of_interest{day}(:)) > 5 && sum(Cb_neurons_of_interest{day}(:)) > 5
+        if sum(M1_neurons_of_interest{day}(:)) >= day_neurons_minimum && sum(Cb_neurons_of_interest{day}(:)) >= day_neurons_minimum
             min_M1_n = min(min_M1_n, sum(M1_neurons_of_interest{day}(:)));
             min_Cb_n = min(min_Cb_n, sum(Cb_neurons_of_interest{day}(:)));
         else
@@ -10958,6 +11387,7 @@ if enabled(60)
         removed = randsample(idxs,length(idxs) - min_Cb_n,false);
         Cb_neurons_of_interest{day}(removed) = false;
         
+        %Collect day spikes
         M1_day_spike_snapshots = cell(param.M1_chans, param.M1_neurons,0);
         Cb_day_spike_snapshots = cell(param.Cb_chans, param.Cb_neurons,0);
         for block=1:param.blocks
@@ -10974,6 +11404,7 @@ if enabled(60)
         M1_spiking_data = nan(round((hist_window(2)-hist_window(1))/bin_width)*size(M1_day_spike_snapshots,2), min_M1_n);
         Cb_spiking_data = nan(round((hist_window(2)-hist_window(1))/bin_width)*size(Cb_day_spike_snapshots,2), min_Cb_n);
         
+        %Create histograms
         for neuron = 1:min_M1_n
             neuron_data = nan(0,1);
             for trial = 1:size(M1_day_spike_snapshots,2)
@@ -11059,6 +11490,7 @@ if enabled(61)
             Cb_day_neurons_of_interest = Cb_neurons_of_interest;
         end
         
+        %Find minimum neurons across both areas
         if sum(M1_day_neurons_of_interest(:)) < min_day_neurons
             M1_day_skips = [M1_day_skips day]; %#ok<AGROW>
         else
@@ -11094,7 +11526,7 @@ if enabled(61)
             Cb_day_neurons_of_interest = Cb_neurons_of_interest;
             comb_Cb_day_neurons_of_interest = Cb_neurons_of_interest;
         end
-        
+        %Remove skipped days
         if ~ismember(day, M1_day_skips)
             M1_NoI_idxs = find(M1_day_neurons_of_interest);
             new_M1_NoI_idxs = datasample(M1_NoI_idxs, M1_min_neurons, 'Replace', false);
@@ -11112,7 +11544,7 @@ if enabled(61)
             
             Cb_spike_counts = nan(0,sum(Cb_day_neurons_of_interest(:))*length(lags));
         end
-        
+        %Equilize neuron counts between areas
         if ~ismember(day, comb_day_skips)
             comb_M1_NoI_idxs = find(comb_M1_day_neurons_of_interest);
             new_comb_M1_NoI_idxs = datasample(comb_M1_NoI_idxs, comb_M1_min_neurons, 'Replace', false);
@@ -11144,7 +11576,7 @@ if enabled(61)
             all_good_trials = find(trial_codes < 2);
             
             for trial = 1:length(all_good_trials)
-                %interpolate position data and calculate velocity
+                %Collect position data
                 frame_nums = str2num(data{all_good_trials(trial),2}); %#ok<ST2NM>
                 if strcmp(data{all_good_trials(trial),3},'1')
                     touch_idx = 1 + round(frame_nums(end-1) - frame_nums(end-2));
@@ -11165,7 +11597,7 @@ if enabled(61)
                 %bin_edges = (touch_idx_ms - (touch_offset_bin_ms + max_lag)):bin_size:(touch_idx_ms + post_touch_interval);
                 bin_edges = reach_idx_ms-max_lag:bin_size:floor(retract_idx_ms/bin_size)*bin_size;
                 
-                
+                %interpolate position data 
                 old_steps = 0:(length(trajectory_data(all_good_trials(trial)).x_coor)-1);
                 old_steps = old_steps*frame_step;
                 new_steps = 0:bin_size:(floor(old_steps(end)/bin_size)*bin_size);
@@ -11173,6 +11605,7 @@ if enabled(61)
                 x_coors = interp1(old_steps, trajectory_data(all_good_trials(trial)).x_coor, new_steps);
                 y_coors = interp1(old_steps, trajectory_data(all_good_trials(trial)).y_coor, new_steps);
                 
+                %calculate velocity
                 x_change = diff(x_coors);
                 y_change = diff(y_coors);
                 tot_change = (x_change.^2) + (y_change.^2);
@@ -11193,9 +11626,9 @@ if enabled(61)
                     outcome = false(size(vel));
                 end
                 outcome_data = [outcome_data; outcome]; %#ok<AGROW>
-                
                 %vel_window_idxs = touch_idx_step-(pre_touch_interval/bin_size):touch_idx_step+(post_touch_interval/bin_size)-1;
                 
+                %Collect M1 spike data
                 if ~ismember(day, M1_day_skips)
                     trial_spike_data = zeros(length(bin_edges)-1, sum(M1_day_neurons_of_interest(:)));
                     neuron_idx = 0;
@@ -11220,6 +11653,7 @@ if enabled(61)
                     M1_spike_counts = cat(1, M1_spike_counts, trial_lag_spike_data);
                 end
                 
+                %Collect Cb spike data
                 if ~ismember(day, Cb_day_skips)
                     trial_spike_data = zeros(length(bin_edges)-1, sum(Cb_day_neurons_of_interest(:)));
                     neuron_idx = 0;
@@ -11244,6 +11678,7 @@ if enabled(61)
                     Cb_spike_counts = cat(1, Cb_spike_counts, trial_lag_spike_data);
                 end
                 
+                %Collect both areas' spike data
                 if ~ismember(day, comb_day_skips)
                     trial_spike_data = zeros(length(bin_edges)-1, sum(comb_M1_day_neurons_of_interest(:)) + sum(comb_Cb_day_neurons_of_interest(:)));
                     neuron_idx = 0;
@@ -11491,7 +11926,7 @@ end
 
 if enabled(62)
     disp('Block 62...')
-    
+    %Preallocation
     M1_r2s = nan(1,param.days);
     M1_r2s_shuff = nan(1,param.days);
     M1_r2s_succ = nan(1,param.days);
@@ -11509,11 +11944,12 @@ if enabled(62)
     
     for day = 1:param.days
         load([rootpath,animal,'/Day',num2str(day),'/speed_decoding_models.mat'])
-        
+        %M1
         if isnumeric(M1_model) 
             M1_r2s(day) = nan;
             M1_r2s_shuff(day) = nan;
         else
+            %Create predictions from M1 model using all trials
             M1_vel_data_pred = predict(M1_model,M1_test_spike_data);
             M1_r2s(day) = 1 - (sum((M1_test_vel_data - M1_vel_data_pred).^2)/sum((M1_test_vel_data - mean(M1_test_vel_data)).^2));
             
@@ -11521,27 +11957,30 @@ if enabled(62)
             M1_vel_shuff = M1_test_vel_data(shuff_idxs);
             M1_r2s_shuff(day) = 1 - (sum((M1_vel_shuff - M1_vel_data_pred).^2)/sum((M1_vel_shuff - mean(M1_vel_shuff)).^2));
             
-            
+            %Create predictions from M1 model using success trials
             M1_test_vel_data_succ = M1_test_vel_data(M1_test_outcome_data);
             M1_test_spike_data_succ = M1_test_spike_data(M1_test_outcome_data,:);
             M1_vel_data_succ_pred = predict(M1_model,M1_test_spike_data_succ);
             M1_r2s_succ(day) = 1 - (sum((M1_test_vel_data_succ - M1_vel_data_succ_pred).^2)/sum((M1_test_vel_data_succ - mean(M1_test_vel_data_succ)).^2));
             
+            %Create predictions from M1 model using failure trials
             M1_test_vel_data_fail = M1_test_vel_data(~M1_test_outcome_data);
             M1_test_spike_data_fail = M1_test_spike_data(~M1_test_outcome_data,:);
             M1_vel_data_fail_pred = predict(M1_model,M1_test_spike_data_fail);
             M1_r2s_fail(day) = 1 - (sum((M1_test_vel_data_fail - M1_vel_data_fail_pred).^2)/sum((M1_test_vel_data_fail - mean(M1_test_vel_data_fail)).^2));
             
+            %Plot
             bar([M1_r2s_fail(day) M1_r2s_succ(day)])
             xticklabels({'Failure','Success'})
             saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/M1_Decoding_SvF.fig'])
             close all
         end
-        
+        %Cb
         if isnumeric(Cb_model)
             Cb_r2s(day) = nan;
             Cb_r2s_shuff(day) = nan;
         else
+            %Create predictions from Cb model using all trials
             Cb_vel_data_pred = predict(Cb_model,Cb_test_spike_data);
             Cb_r2s(day) = 1 - (sum((Cb_test_vel_data - Cb_vel_data_pred).^2)/sum((Cb_test_vel_data - mean(Cb_test_vel_data)).^2));
             
@@ -11549,27 +11988,30 @@ if enabled(62)
             Cb_vel_shuff = Cb_test_vel_data(shuff_idxs);
             Cb_r2s_shuff(day) = 1 - (sum((Cb_vel_shuff - Cb_vel_data_pred).^2)/sum((Cb_vel_shuff - mean(Cb_vel_shuff)).^2));
             
-            
+            %Create predictions from Cb model using success trials
             Cb_test_vel_data_succ = Cb_test_vel_data(Cb_test_outcome_data);
             Cb_test_spike_data_succ = Cb_test_spike_data(Cb_test_outcome_data,:);
             Cb_vel_data_succ_pred = predict(Cb_model,Cb_test_spike_data_succ);
             Cb_r2s_succ(day) = 1 - (sum((Cb_test_vel_data_succ - Cb_vel_data_succ_pred).^2)/sum((Cb_test_vel_data_succ - mean(Cb_test_vel_data_succ)).^2));
             
+            %Create predictions from Cb model using failure trials
             Cb_test_vel_data_fail = Cb_test_vel_data(~Cb_test_outcome_data);
             Cb_test_spike_data_fail = Cb_test_spike_data(~Cb_test_outcome_data,:);
             Cb_vel_data_fail_pred = predict(Cb_model,Cb_test_spike_data_fail);
             Cb_r2s_fail(day) = 1 - (sum((Cb_test_vel_data_fail - Cb_vel_data_fail_pred).^2)/sum((Cb_test_vel_data_fail - mean(Cb_test_vel_data_fail)).^2));
             
+            %Plot
             bar([Cb_r2s_fail(day) Cb_r2s_succ(day)])
             xticklabels({'Failure','Success'})
             saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Cb_Decoding_SvF.fig'])
             close all
         end
-        
+        %Both M1 and Cb
         if isnumeric(comb_model)
             comb_r2s(day) = nan;
             comb_r2s_shuff(day) = nan;
         else
+            %Create predictions from combined model using all trials
             comb_vel_data_pred = predict(comb_model,comb_test_spike_data);
             comb_r2s(day) = 1 - (sum((comb_test_vel_data - comb_vel_data_pred).^2)/sum((comb_test_vel_data - mean(comb_test_vel_data)).^2));
             
@@ -11577,17 +12019,19 @@ if enabled(62)
             comb_vel_shuff = comb_test_vel_data(shuff_idxs);
             comb_r2s_shuff(day) = 1 - (sum((comb_vel_shuff - comb_vel_data_pred).^2)/sum((comb_vel_shuff - mean(comb_vel_shuff)).^2));
             
-            
+            %Create predictions from combined model using success trials
             comb_test_vel_data_succ = comb_test_vel_data(comb_test_outcome_data);
             comb_test_spike_data_succ = comb_test_spike_data(comb_test_outcome_data,:);
             comb_vel_data_succ_pred = predict(comb_model,comb_test_spike_data_succ);
             comb_r2s_succ(day) = 1 - (sum((comb_test_vel_data_succ - comb_vel_data_succ_pred).^2)/sum((comb_test_vel_data_succ - mean(comb_test_vel_data_succ)).^2));
             
+            %Create predictions from combined model using failure trials
             comb_test_vel_data_fail = comb_test_vel_data(~comb_test_outcome_data);
             comb_test_spike_data_fail = comb_test_spike_data(~comb_test_outcome_data,:);
             comb_vel_data_fail_pred = predict(comb_model,comb_test_spike_data_fail);
             comb_r2s_fail(day) = 1 - (sum((comb_test_vel_data_fail - comb_vel_data_fail_pred).^2)/sum((comb_test_vel_data_fail - mean(comb_test_vel_data_fail)).^2));
             
+            %Plot
             bar([comb_r2s_fail(day) comb_r2s_succ(day)])
             xticklabels({'Failure','Success'})
             saveas(gcf,[rootpath,animal,'/Day',num2str(day),'/Comb_Decoding_SvF.fig'])
@@ -11595,6 +12039,7 @@ if enabled(62)
         end
     end
     
+    %Plot r-squares
     plot(M1_r2s)
     hold on
     %plot(M1_r2s_shuff)
@@ -11611,6 +12056,7 @@ if enabled(62)
     saveas(gcf,[rootpath,animal,'/comb_Decoding_Reach_Tracjectory.fig'])
     close all
     
+    %Save data for multi-animal analysis
     load([rootpath,animal,'/Shared_Data.mat'])
     shared_data.M1_r2s = M1_r2s;
     shared_data.M1_r2s_succ = M1_r2s_succ;
@@ -11627,6 +12073,7 @@ if enabled(62)
 end
 
 %% Digit Trajectory Prelim
+%Unfinished and unused code for digit trajectory tracking
 
 if false
     digit_path = 'Z:\M1_Cb_Reach\I086\DLC_DigitsTracking\';
@@ -11795,7 +12242,7 @@ end
 
 %% Search for likely candidates for single-trial example of LFP and PETH effect (63)
     %Looks for higher LFP and PETH amplitude around reach/touch/retract and shorter intervals between reach/touch/retract
-
+    %Displays findings using a GUI
 if enabled(63)
     se_day = 1; %day to search for an example of small effect 
     le_day = 5; %day to search for an example of large effect 
@@ -12042,6 +12489,7 @@ if enabled(63)
     exit_viewer = false;
     fig_row = num_to_save;
     
+    %Code for GUI Display and navigation
     while ~exit_viewer
         close all
         exfig = figure;
@@ -12065,7 +12513,7 @@ if enabled(63)
                         end
                     end
                     
-                    
+                    %Display
                     for M1_chan = M1_chans
                         for Cb_chan = Cb_chans
                             total_found = total_found+1;
@@ -12118,6 +12566,7 @@ if enabled(63)
             end
         end
         
+        %Navigation
         [~,~,button] = ginput(1);
         switch button
             case 32 % space
@@ -12172,10 +12621,11 @@ if enabled(64)
                     for code = 1:neuron_num_codes
                         eval(['neurons_of_interest = ', neuron_area{1}, '_neurons_of_interest{day};'])
                         if neurons_of_interest(s_chan,code) && exist([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Phase_Data/',LFP_area{1},'_Channel',num2str(LFP_chan),'/',neuron_area{1},'_Ch',num2str(s_chan),'_code',num2str(code),'_spike_phase_histogram.fig'],'file')
+                            %Opens figures and extracts data
                             uiopen([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Spike-Phase_Data/',LFP_area{1},'_Channel',num2str(LFP_chan),'/',neuron_area{1},'_Ch',num2str(s_chan),'_code',num2str(code),'_spike_phase_histogram.fig'],1);
                             sp_hist = gcf;
                             hist_counts = sp_hist.Children.Children.Values;
-                            
+                            %Identify data with high difference between minimum bin and maximum bin
                             if max(hist_counts) >= min_highest_count
                                 count_ratio = [count_ratio, (max(hist_counts)/min(hist_counts))]; %#ok<AGROW>
                                 neuron_chans = [neuron_chans, s_chan]; %#ok<AGROW>
@@ -12195,7 +12645,7 @@ if enabled(64)
                 end
             end
             [~,sort_idx] = sort(multi_count_ratio,'descend');
-            
+            %Store results
             multi_count_ratio = multi_count_ratio(sort_idx);
             count_ratio = count_ratio(sort_idx);
             neuron_chans = neuron_chans(sort_idx);
@@ -12212,18 +12662,21 @@ end
 
 if enabled(65)
     disp('Block 65...')
+    %Parameters
     freq_range = [1.5 4];  %in hz
     time_range = [-250 750]; %in ms
+    days_to_plot = [1 5];
+    power_inc_thresh = 0.5;
+    rr_duration_thresh = 0.3; %in seconds
+    %Preallocation
     day_M1_means = zeros(1,param.days);
     day_Cb_means = zeros(1,param.days);
     day_M1_err = zeros(1,param.days);
     day_Cb_err = zeros(1,param.days);
-    days_to_plot = [1 5];
-    power_inc_thresh = 0.5;
-    rr_duration_thresh = 0.3; %in seconds
     
     M1_day_ch_means = cell(1, param.days);
     Cb_day_ch_means = cell(1, param.days);
+    
     for day=1:param.days
         day_M1_ersp = [];
         day_Cb_ersp = [];
@@ -12231,7 +12684,8 @@ if enabled(65)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals', '.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/Bad_trials', '.mat']);
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/ERSP_reach', '.mat']);
-
+            
+            %Remove trials that don't conform to the parameters
             M1_reach_retract_interval = reach_retract_interval;
             M1_reach_retract_interval(M1_bad_trials) = [];
             M1_ersp_data = M1_ersp_data(:,:,:,M1_reach_retract_interval < rr_duration_thresh);
@@ -12239,6 +12693,7 @@ if enabled(65)
             Cb_reach_retract_interval(Cb_bad_trials) = [];
             Cb_ersp_data = Cb_ersp_data(:,:,:,Cb_reach_retract_interval < rr_duration_thresh);
             
+            %Create heatmeps as in codeblock 13
             %M1_heatmap = create_power_heatmap((M1_ersp_data .* conj(M1_ersp_data)), times, freqs);
             M1_heatmap = create_power_heatmap(abs(M1_ersp_data), M1_times, M1_freqs);
             saveas(M1_heatmap, [rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/M1_fast_power_heatmap', '.fig'])
@@ -12269,7 +12724,6 @@ if enabled(65)
         Cb_day_ch_means{day} = squeeze(mean(mean(day_Cb_ersp,3),2));
     end
 
-    
     load([rootpath,animal,'/Shared_Data.mat'])
     shared_data.M1_fast_day_spectral_power = M1_day_ch_means;
     shared_data.Cb_fast_day_spectral_power = Cb_day_ch_means;
@@ -12283,20 +12737,21 @@ end
 if enabled(66)
     disp('Block 66...')
     addpath(genpath('Z:\Matlab for analysis\PCA_cellassembly'))
-    M1_neurons_of_interest = cellfun(@not,cellfun(@isnan,param.M1_neuron_chans,'UniformOutput', false),'UniformOutput', false);
-    Cb_neurons_of_interest = cellfun(@not,cellfun(@isnan,param.Cb_neuron_chans,'UniformOutput', false),'UniformOutput', false);
+    %Parameters
     bin_width = 1; %in Fs
     window = [-0.5 1]; %in seconds
+    bin_window = round((window+4) * param.M1_Fs);
+    edges = bin_window(1):bin_width:bin_window(2);
     
     opts.threshold.method = 'MarcenkoPastur';
     opts.Patterns.method = 'PCA';
     opts.Patterns.number_of_iterations = 1000;
     
-    bin_window = round((window+4) * param.M1_Fs);
-    edges = bin_window(1):bin_width:bin_window(2);
+    M1_neurons_of_interest = cellfun(@not,cellfun(@isnan,param.M1_neuron_chans,'UniformOutput', false),'UniformOutput', false);
+    Cb_neurons_of_interest = cellfun(@not,cellfun(@isnan,param.Cb_neuron_chans,'UniformOutput', false),'UniformOutput', false);
     for day = 1:param.days
         load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{1},'/spiketrain_snapshots_full.mat']);
-        
+        %M1
         day_neurons_of_interest = find(M1_neurons_of_interest{day}(:));
         if isempty(day_neurons_of_interest)
             M1_patterns = nan;
@@ -12311,6 +12766,7 @@ if enabled(66)
             close all
             %important_PCs_M1 = [];
         else
+            %Create spike histogram
             neuron_idx = 0;
             succ_cat_hist = nan(length(day_neurons_of_interest), size(M1_spike_snapshots_full,3)*(length(edges)-1));
             for full_neuron_idx = day_neurons_of_interest'
@@ -12321,8 +12777,10 @@ if enabled(66)
                     succ_cat_hist(neuron_idx,time_range) = histcounts(M1_spike_snapshots_full{chan,neuron,trial}, edges);
                 end
             end
+            %Create assembly patterns using PCA
             [M1_patterns, M1_eigenvalues, M1_lambda_max, M1_score] = assembly_patterns(succ_cat_hist,opts);
             
+            %Plot correlations
             correlationmat = corr(succ_cat_hist');
             figure(1), clf
             imagesc(correlationmat); colorbar;
@@ -12332,7 +12790,7 @@ if enabled(66)
             close all
             %important_PCs_M1 = find(M1_eigenvalues > M1_lambda_max);
         end
-        
+        %Cb
         day_neurons_of_interest = find(Cb_neurons_of_interest{day}(:));
         if isempty(day_neurons_of_interest)
             Cb_patterns = nan;
@@ -12347,6 +12805,7 @@ if enabled(66)
             close all
             %important_PCs_Cb = [];
         else
+            %Create spike histogram
             neuron_idx = 0;
             succ_cat_hist = nan(length(day_neurons_of_interest), size(Cb_spike_snapshots_full,3)*(length(edges)-1));
             for full_neuron_idx = day_neurons_of_interest'
@@ -12357,8 +12816,10 @@ if enabled(66)
                     succ_cat_hist(neuron_idx,time_range) = histcounts(Cb_spike_snapshots_full{chan,neuron,trial}, edges);
                 end
             end
+            %Create assembly patterns using PCA
             [Cb_patterns, Cb_eigenvalues, Cb_lambda_max, Cb_score] = assembly_patterns(succ_cat_hist,opts);
         
+            %Plot correlations
             correlationmat = corr(succ_cat_hist');
             figure(1), clf
             imagesc(correlationmat); colorbar;
@@ -12368,7 +12829,7 @@ if enabled(66)
             close all
             %important_PCs_Cb = find(Cb_eigenvalues > Cb_lambda_max);
         end
-        
+        %Save patterns
         M1_eigen_lambda_ratio = M1_eigenvalues(M1_eigenvalues > M1_lambda_max)/M1_lambda_max;
         Cb_eigen_lambda_ratio = Cb_eigenvalues(Cb_eigenvalues > Cb_lambda_max)/Cb_lambda_max;
         save([rootpath,animal,'/Day',num2str(day),'/',param.block_names{1},'/PC_reach_patterns.mat'], 'M1_patterns', 'Cb_patterns', 'M1_eigen_lambda_ratio', 'Cb_eigen_lambda_ratio');
@@ -12377,6 +12838,7 @@ if enabled(66)
 end
 
 %% New Neural Trajectory Consistency Analysis (67)
+%Alternate neural trajectory consistency analysis. Instead of interpolating the trajectories it uses a fixed window arround reach onset
 
 if enabled(67)
     disp('Block 67...')
@@ -12400,7 +12862,7 @@ if enabled(67)
             load([rootpath,animal,'/Day',num2str(day),'/',param.block_names{block},'/inter_event_intervals.mat']);
             reach_touch_interval(reach_touch_interval == -1) = [];
             reach_retract_interval(reach_retract_interval == -1) = [];
-            
+            %Generate time information
             for trial = 1:length(reach_touch_interval)
                 if strcmp(reference_event,'reach')
                     event_offset = 26;
@@ -12417,7 +12879,7 @@ if enabled(67)
                 
             end
         end
-        
+        %Collect M1 data
         if exist([rootpath,animal,'/Day',num2str(day),'/M1_2PC_factors.mat'],'file')
             load([rootpath,animal,'/Day',num2str(day),'/M1_2PC_factors.mat']);
             M1_traj = D;
@@ -12435,7 +12897,7 @@ if enabled(67)
                 error('Problem with stored outcome')
             end
         end
-        
+        %Collect Cb data
         if exist([rootpath,animal,'/Day',num2str(day),'/Cb_2PC_factors.mat'],'file')
             load([rootpath,animal,'/Day',num2str(day),'/Cb_2PC_factors.mat']);
             Cb_traj = D;
@@ -12453,13 +12915,13 @@ if enabled(67)
                 error('Problem with stored outcome')
             end
         end
-        
+        %Calculate neural trajectory consistency
         M1_all_traj_corr_full{day,1} = trajectory_consistency_calc2(day_traj_M1_succ);
         M1_all_traj_corr_full{day,2} = trajectory_consistency_calc2(day_traj_M1_fail, mean(day_traj_M1_succ,3));
         Cb_all_traj_corr_full{day,1} = trajectory_consistency_calc2(day_traj_Cb_succ);
         Cb_all_traj_corr_full{day,2} = trajectory_consistency_calc2(day_traj_Cb_fail, mean(day_traj_Cb_succ,3));
     end
-    
+    %Save for multi_animal_analysis
     load([rootpath,animal,'/Shared_Data.mat'])
     shared_data.M1_succ_traj_corr_full2 = M1_all_traj_corr_full(:,1)';
     shared_data.M1_fail_traj_corr_full2 = M1_all_traj_corr_full(:,2)';
@@ -12470,8 +12932,6 @@ if enabled(67)
     clearvars -except code_rootpath rootpath origin_rootpath animal param enabled;
     close all
 end
-
-%% Reach 1vs2 Success and Reach Duration
 
 beep
 disp 'Analysis Complete.'
